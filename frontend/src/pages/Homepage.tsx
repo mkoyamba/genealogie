@@ -1,4 +1,3 @@
-import { prototype } from "events";
 import { useEffect, useState } from "react";
 
 function Homepage() {
@@ -8,6 +7,7 @@ function Homepage() {
 
 
 	useEffect(() => {
+		let n = false
 		async function getMembers() {
 			const effectResponse = await fetch(`${apiURL}/members`, {
 				method: "GET",
@@ -18,15 +18,14 @@ function Homepage() {
 			const data = await effectResponse?.json()
 			setResponse(JSON.stringify(data))
 		}
-		if (!response)
+		if (!n) {
+			n = true
 			getMembers()
+		}
 	})
-	console.log(response)
 
 
-  return (
-	<div></div>
-  );
+	return <h1>404</h1>
 }
 
 const style = {
