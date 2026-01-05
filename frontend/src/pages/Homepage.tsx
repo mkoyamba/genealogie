@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { UserDataBasic } from "../Types";
+import Footer from "../modules/footer"
+import Header from "../modules/header"
+import Canva from "../modules/canva";
 
 function Homepage() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
 
-	const [response, setResponse] = useState("")
+	const [dataBasicMembers, setDataBasicMembers] = useState<UserDataBasic[]>([])
 
 
 	useEffect(() => {
@@ -13,22 +17,84 @@ function Homepage() {
 				method: "GET",
 				mode: 'cors'
 			}).catch(() => {
-				setResponse("lol")
+				throw Error("Fetch error")
 			})
-			const data = await effectResponse?.json()
-			setResponse(JSON.stringify(data))
-		}
-		if (!n) {
-			n = true
-			getMembers()
-		}
-	})
+			const raw_data = await effectResponse?.json()
+			let dataBasicMembersTemp: UserDataBasic[] = [];
 
+			raw_data.forEach((member: any) => {
+				let dataMember: UserDataBasic = {
+					id: parseInt(member["id"]["N"]),
+					surname: member["surname"]["S"],
+					name: member["name"]["S"],
+					dateOfBirth: member["dateOfBirth"]["S"],
+					gender: member["gender"]["S"],
+					couple: [],
+					parent1: parseInt(member["parent1"]["S"]),
+					parent2: parseInt(member["parent2"]["S"]),
+					prime: member["prime"]["BOOL"]
+				}
+				const coupleRaw = member["couple"]["NS"]
+				coupleRaw.forEach((id: string) => {
+					dataMember.couple.push(parseInt(id))
+				})
+				dataBasicMembersTemp.push(dataMember)
+			})
+			setDataBasicMembers(dataBasicMembersTemp)
+		}
+		getMembers()
+	}, [])
 
-	return <h1>404</h1>
+	console.log(dataBasicMembers)
+	
+
+	return (
+		<div style={style.background}>
+			<div style={style.header}><Header/></div>
+			<div style={style.content}>
+				<div style={style.formAddContainer}>
+					
+				</div>
+				<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
+			</div>
+			<div style={style.footer}><Footer/></div>
+		</div>
+	)
 }
 
 const style = {
+	background: {
+		"width": "100vw",
+		"height": "100vh",
+		"backgroundColor": "pink"
+	},
+	header: {
+		"width": "100vw",
+		"height": "10vh",
+	},
+	footer: {
+		"width": "100vw",
+		"height": "5vh",
+	},
+	content: {
+		"width": "100vw",
+		"height": "85vh",
+		"display": "flex"
+	},
+	canva: {
+		"width": "100%",
+		"height": "83vh",
+		"backgroundColor": "white",
+		"margin": "1vh",
+		"borderRadius": "10px"
+	},
+	formAddContainer: {
+		"backgroundColor": "green",
+		"width": "15vw",
+		"height": "83vh",
+		"margin": "1vh",
+		"borderRadius": "10px"
+	}
 }
 
 export default Homepage;

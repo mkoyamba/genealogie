@@ -1,0 +1,34 @@
+.control-wrapper {
+  display: grid;
+  grid-template-columns: max-content max-content max-content;
+  border: 1px solid rgb(163, 163, 163);
+  border-radius: 8px;
+  overflow: hidden; /* important pour l'arrondi */
+}
+
+.control-btn,
+.control-value {
+  color: rgb(27, 27, 27);
+  font-size: 16px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: 500;
+  padding: 4px 8px;
+  background-color: rgb(221, 221, 221);
+  border: 0;
+}
+
+.control-btn {
+  cursor: pointer;
+}
+
+.control-btn:active {
+  transform: translateY(1px);
+}
+
+.control-btn:first-child {
+  border-right: 1px solid rgb(163, 163, 163);
+}
+
+.control-value {
+  border-right: 1px solid rgb(163, 163, 163);
+}
