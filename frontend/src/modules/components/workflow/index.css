@@ -1,0 +1,28 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;   /* ❌ aucune scrollbar */
+  background: transparent;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;   /* ❌ rien ne scroll */
+  background: #fafafa;
+  background: transparent;
+}
+
+#world {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  /* ⚠️ IMPORTANT */
+  width: max-content;
+  height: max-content;
+  background: transparent;
+
+  transform: translate(0px, 0px); /* déplacé à la souris */
+  will-change: transform;
+}

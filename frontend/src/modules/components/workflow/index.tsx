@@ -1,6 +1,7 @@
 import { WorkflowProps } from "../../../Types";
 import UnionBranch from "../../unionBranche";
 import { buildUnionTree } from "../../utils/buildTree";
+import './index.css'
 
 export const Workflow = ({ dataBasicMembers }: WorkflowProps) => {
   const roots = buildUnionTree(dataBasicMembers);
@@ -9,15 +10,20 @@ export const Workflow = ({ dataBasicMembers }: WorkflowProps) => {
 
   return (
     <div style={{ width: "100%", height: "100vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
-      <div>
-        {roots.map((root) => (
-          <UnionBranch
-            key={root.key}
-            node={root}
-            cardWidth={cardWidth}
-            cardHeight={cardHeight}
-          />
-        ))}
+      <div id="stage">
+		<div id="world">
+			<div style={styles.rootLayer}>
+			{roots.map((root) => (
+				<div key={root.key} style={styles.rootUnion}>
+				<UnionBranch
+					node={root}
+					cardWidth={cardWidth}
+					cardHeight={cardHeight}
+				/>
+				</div>
+			))}
+			</div>
+		</div>
       </div>
     </div>
   );
@@ -30,11 +36,20 @@ const styles = {
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
-		overflow: "auto",
+		overflowY: "hidden",
+    	overflowX: "hidden",
 	},
 	tree: {
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
+	},
+	rootLayer: {
+		display: "flex",
+		alignItems: "flex-start",
+	},
+	rootUnion: {
+		/* 👇 unions non liées = très espacées */
+		marginInline: "12vw", // énorme espace horizontal responsive
 	}
 };

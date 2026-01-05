@@ -8,8 +8,7 @@ type Props = {
   node: UnionNode;
   cardWidth: string;
   cardHeight: string;
-
-  // Le parent récupère l’ancre "haut" de CETTE union-enfant (sur la carte du descendant)
+  siblingUnionCount?: number;
   registerTopAnchorRef?: (el: HTMLDivElement | null) => void;
 };
 
@@ -20,6 +19,7 @@ export default function UnionBranch({
   node,
   cardWidth,
   cardHeight,
+  siblingUnionCount,
   registerTopAnchorRef,
 }: Props) {
   const isCouple = node.partners.length === 2;
@@ -38,6 +38,16 @@ export default function UnionBranch({
   const [svgSize, setSvgSize] = useState({ w: 1, h: 1 });
 
   const snap = (n: number) => Math.round(n);
+
+  const unionsHere = siblingUnionCount ?? 1;
+
+  // base d'écart entre générations
+  const BASE_GAP_VH = 4;
+
+  // chaque union supplémentaire augmente l’écart
+  const EXTRA_PER_UNION_VH = 1.5;
+
+  const rowGap = `${BASE_GAP_VH + (unionsHere - 1) * EXTRA_PER_UNION_VH}vh`;
 
   // IMPORTANT: l'ancre que ce composant donne à son parent = la carte du descendant (gauche)
   useLayoutEffect(() => {
@@ -185,7 +195,7 @@ export default function UnionBranch({
   }, [node.children.length]);
 
   return (
-    <div ref={branchRef} style={style.branch}>
+    <div ref={branchRef} style={{...style.branch, rowGap }}>
       {/* SVG toujours présent (évite deadlock) */}
       <svg
         viewBox={`0 0 ${svgSize.w} ${svgSize.h}`}
@@ -235,6 +245,7 @@ export default function UnionBranch({
                 cardWidth={cardWidth}
                 cardHeight={cardHeight}
                 registerTopAnchorRef={setChildTopRef(child.key)}
+                siblingUnionCount={node.children.length}
               />
             ))}
           </div>
@@ -250,6 +261,7 @@ const style: Record<string, React.CSSProperties> = {
     display: "inline-flex",
     flexDirection: "column",
     alignItems: "center",
+    rowGap: "5vw"
   },
   svg: {
     position: "absolute",
@@ -267,6 +279,7 @@ const style: Record<string, React.CSSProperties> = {
     display: "inline-flex",
     flexDirection: "column",
     alignItems: "center",
+    rowGap: "10vh"
   },
   partnersRow: {
     display: "flex",
@@ -289,5 +302,6 @@ const style: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     gap: "24px",
     alignItems: "flex-start",
+    columnGap: "10vw"
   },
 };
