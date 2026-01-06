@@ -3,6 +3,7 @@ import { UserDataBasic } from "../Types";
 import Footer from "../modules/footer"
 import Header from "../modules/header"
 import Canva from "../modules/canva";
+import FormEntryMember from "../modules/formEntryMember";
 
 function Homepage() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
@@ -53,7 +54,7 @@ function Homepage() {
 			<div style={style.header}><Header/></div>
 			<div style={style.content}>
 				<div style={style.formAddContainer}>
-					
+					<FormEntryMember/>
 				</div>
 				<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
 			</div>

@@ -1,14 +1,14 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;   /* ❌ aucune scrollbar */
+  overflow: hidden;
   background: transparent;
 }
 
 #stage {
   position: fixed;
   inset: 0;
-  overflow: hidden;   /* ❌ rien ne scroll */
+  overflow: hidden;
   background: #fafafa;
   background: transparent;
 }
@@ -17,12 +17,10 @@ html, body {
   position: absolute;
   left: 0;
   top: 0;
-
-  /* ⚠️ IMPORTANT */
   width: max-content;
   height: max-content;
   background: transparent;
 
-  transform: translate(0px, 0px); /* déplacé à la souris */
+  transform: translate(0px, 0px);
   will-change: transform;
 }
