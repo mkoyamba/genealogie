@@ -37,7 +37,8 @@ function Homepage() {
 				}
 				const coupleRaw = member["couple"]["NS"]
 				coupleRaw.forEach((id: string) => {
-					dataMember.couple.push(parseInt(id))
+					if (id !== "-1")
+						dataMember.couple.push(parseInt(id))
 				})
 				dataBasicMembersTemp.push(dataMember)
 			})
@@ -54,7 +55,7 @@ function Homepage() {
 			<div style={style.header}><Header/></div>
 			<div style={style.content}>
 				<div style={style.formAddContainer}>
-					<FormEntryMember/>
+					<FormEntryMember dataBasicMembers={dataBasicMembers}/>
 				</div>
 				<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
 			</div>
@@ -90,11 +91,12 @@ const style = {
 		"borderRadius": "10px"
 	},
 	formAddContainer: {
-		"backgroundColor": "green",
+		"backgroundColor": "lightblue",
 		"width": "15vw",
-		"height": "83vh",
+		"height": "81vh",
 		"margin": "1vh",
-		"borderRadius": "10px"
+		"borderRadius": "10px",
+		padding: "1vh"
 	}
 }
 
