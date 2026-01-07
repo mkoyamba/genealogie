@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import ButtonHomepage from "../modules/buttonHomepage";
 import { checkPassword } from "../modules/utils/checkPassword";
 import { useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import NoPage from "./Error404";
 import Header from "../modules/header";
 import Footer from "../modules/footer";
 
-function Credits() {
+function Livre() {
 
 	const [searchParams] = useSearchParams();
 	const password = searchParams.get("id")
@@ -24,7 +24,7 @@ function Credits() {
 			{check && <div style={style.background}>
 				<Header password={password}/>
 				<ButtonHomepage/>
-				<h1>Credits</h1>
+				<h1>Livre</h1>
 				<Footer password={password}/>
 			</div>}
 			{!check && <NoPage/>}
@@ -34,10 +34,10 @@ function Credits() {
 
 const style = {
 	background: {
-		"width": "100vw",
-		"height": "100vh",
-		"backgroundColor": "pink"
+		width: "100vw",
+		minHeight: "100vh",
+		backgroundColor: "pink"
 	}
 }
 
-export default Credits;
+export default Livre;

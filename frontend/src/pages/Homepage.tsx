@@ -4,9 +4,24 @@ import Footer from "../modules/footer"
 import Header from "../modules/header"
 import Canva from "../modules/canva";
 import FormEntryMember from "../modules/formEntryMember";
+import { useSearchParams } from "react-router-dom";
+import { checkPassword } from "../modules/utils/checkPassword";
+import NoPage from "./Error404";
 
 function Homepage() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
+
+	const [searchParams] = useSearchParams();
+
+	const password = searchParams.get("id")
+	const [check,setCheck] = useState<Boolean>(false)
+	useEffect(() => {
+		async function checker() {
+			const response = await checkPassword(password)
+			setCheck(response)
+		}
+		checker()
+	})
 
 	const [dataBasicMembers, setDataBasicMembers] = useState<UserDataBasic[]>([])
 
@@ -44,58 +59,55 @@ function Homepage() {
 			})
 			setDataBasicMembers(dataBasicMembersTemp)
 		}
-		getMembers()
+		//getMembers() TODO
 	}, [])
-
-	console.log(dataBasicMembers)
 	
 
 	return (
 		<div style={style.background}>
-			<div style={style.header}><Header/></div>
-			<div style={style.content}>
-				<div style={style.formAddContainer}>
-					<FormEntryMember dataBasicMembers={dataBasicMembers}/>
+			{check && <div style={style.background}>
+				<Header password={password}/>
+				<div style={style.content}>
+					<div style={style.formAddContainer}>
+						<FormEntryMember dataBasicMembers={dataBasicMembers}/>
+					</div>
+					<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
 				</div>
-				<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
-			</div>
-			<div style={style.footer}><Footer/></div>
+				<div style={style.footer}><Footer password={password}/></div>
+			</div>}
+			{!check && <NoPage/>}
 		</div>
 	)
 }
 
 const style = {
 	background: {
-		"width": "100vw",
-		"height": "100vh",
-		"backgroundColor": "pink"
-	},
-	header: {
-		"width": "100vw",
-		"height": "10vh",
+		width: "100vw",
+		height: "100vh",
+		backgroundColor: "pink"
 	},
 	footer: {
-		"width": "100vw",
-		"height": "5vh",
+		width: "100vw",
+		height: "5vh",
 	},
 	content: {
-		"width": "100vw",
-		"height": "85vh",
+		width: "100vw",
+		height: "85vh",
 		"display": "flex"
 	},
 	canva: {
-		"width": "100%",
-		"height": "83vh",
-		"backgroundColor": "white",
-		"margin": "1vh",
-		"borderRadius": "10px"
+		width: "100%",
+		height: "83vh",
+		backgroundColor: "white",
+		margin: "1vh",
+		borderRadius: "10px"
 	},
 	formAddContainer: {
-		"backgroundColor": "lightblue",
-		"width": "15vw",
-		"height": "81vh",
-		"margin": "1vh",
-		"borderRadius": "10px",
+		backgroundColor: "lightblue",
+		width: "15vw",
+		height: "83vh",
+		margin: "1vh",
+		borderRadius: "10px",
 		padding: "1vh"
 	}
 }
