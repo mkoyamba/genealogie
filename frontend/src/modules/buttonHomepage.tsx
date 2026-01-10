@@ -5,7 +5,7 @@ function ButtonHomepage() {
 
 	return (
 		<button style={style.button} onClick={() => navigate("/")}>
-			X
+			🏠
 		</button>
 	)
 };
@@ -16,8 +16,10 @@ const style = {
 		width: '2vw',
 		aspectRatio: '1/1',
 		borderRadius: '100%',
-		top: '0',
-		left: '0'
+		border: 'none',
+		top: '2.5vh',
+		left: '2.5vh',
+		zIndex: 15
 	}
 }
 

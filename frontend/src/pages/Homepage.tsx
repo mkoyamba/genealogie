@@ -24,6 +24,7 @@ function Homepage() {
 	})
 
 	const [dataBasicMembers, setDataBasicMembers] = useState<UserDataBasic[]>([])
+	const [dictMembers, setDictMembers] = useState<Map<number, UserDataBasic>>(new Map)
 
 
 	useEffect(() => {
@@ -57,23 +58,29 @@ function Homepage() {
 				})
 				dataBasicMembersTemp.push(dataMember)
 			})
+			dataBasicMembersTemp.sort((a,b) => a.id > b.id ? 1 : -1)
+			const dictMembersTemp = new Map
+			dataBasicMembersTemp.forEach((member : UserDataBasic) => {
+					dictMembersTemp.set(member.id, member)
+			})
+			setDictMembers(dictMembersTemp)
 			setDataBasicMembers(dataBasicMembersTemp)
 		}
-		//getMembers() TODO
+		getMembers() //TODO
 	}, [])
 	
 
 	return (
 		<div style={style.background}>
 			{check && <div style={style.background}>
-				<Header password={password}/>
+				<Header password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 				<div style={style.content}>
 					<div style={style.formAddContainer}>
 						<FormEntryMember dataBasicMembers={dataBasicMembers}/>
 					</div>
 					<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
 				</div>
-				<div style={style.footer}><Footer password={password}/></div>
+				<div style={style.footer}><Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/></div>
 			</div>}
 			{!check && <NoPage/>}
 		</div>
@@ -84,7 +91,7 @@ const style = {
 	background: {
 		width: "100vw",
 		height: "100vh",
-		backgroundColor: "pink"
+		backgroundColor: '#f2ccc9'
 	},
 	footer: {
 		width: "100vw",
@@ -93,7 +100,7 @@ const style = {
 	content: {
 		width: "100vw",
 		height: "85vh",
-		"display": "flex"
+		display: "flex"
 	},
 	canva: {
 		width: "100%",

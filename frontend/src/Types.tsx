@@ -14,10 +14,10 @@ export type WorkflowProps = {
 	dataBasicMembers: UserDataBasic[];
 };
 
-export type memberChildsTemplate = {
+export type MemberChildsTemplate = {
 	id: number,
 	data: UserDataBasic,
-	children: memberChildsTemplate[],
+	children: MemberChildsTemplate[],
 	couple: number[]
 };
 
@@ -26,3 +26,12 @@ export type UnionNode = {
   partners: UserDataBasic[];
   children: UnionNode[];
 };
+
+export type MediaInfos = {
+	id: number,
+	name: string,
+	url: String,
+	extension: String,
+	type: "audio" | "video" | "picture" | "text",
+	membersId: number[]
+}

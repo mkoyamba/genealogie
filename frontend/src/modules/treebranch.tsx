@@ -1,9 +1,9 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
-import { memberChildsTemplate } from "../Types";
+import { MemberChildsTemplate } from "../Types";
 import Card from "./card";
 
 type TreeBranchProps = {
-  node: memberChildsTemplate;
+  node: MemberChildsTemplate;
   cardWidth: string;
   cardHeight: string;
   registerNodeRef?: (el: HTMLDivElement | null) => void;

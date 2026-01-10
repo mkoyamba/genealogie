@@ -1,23 +1,31 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useNavigation } from "react-router-dom";
+import { UserDataBasic } from "../Types";
 
 type Props = {
-	password : String | null
+	password : string | null,
+	dataBasicMembers : UserDataBasic[]
+	dictMembers: Map<number, UserDataBasic>
 }
 
 function Header( props : Props ) {
 
+	const dataBasicMembers = {
+		dataBasicMembers: props.dataBasicMembers,
+		password: props.password,
+		dictMembers: props.dictMembers
+	}
 	const navigate = useNavigate();
 
 	return (
 		<div style={style.container}>
 			<div style={style.background}>
-				<button style={style.button} onClick={() => navigate(`/livre?id=${props.password}`)}>
+				<button style={style.button} onClick={() => navigate(`/livre?id=${props.password}`, {state: dataBasicMembers})}>
 					Livre
 				</button>
-				<button style={style.button} onClick={() => navigate(`/medias?id=${props.password}`)}>
+				<button style={style.button} onClick={() => navigate(`/medias?id=${props.password}`, {state: dataBasicMembers})}>
 					Medias
 				</button>
-				<button style={style.button} onClick={() => navigate(`/recettes?id=${props.password}`)}>
+				<button style={style.button} onClick={() => navigate(`/recettes?id=${props.password}`, {state: dataBasicMembers})}>
 					Recettes
 				</button>
 			</div>
@@ -34,6 +42,7 @@ const style = {
 		position: 'fixed' as const,
 		top: '0',
 		left: '0',
+		zIndex: 9
 	},
 	button: {
 		width: "100%",

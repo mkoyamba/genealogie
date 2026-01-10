@@ -168,7 +168,7 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 				
 				<div style={style.dateOfBirth}>
 					<div style={style.containerDay}>
-						<text style={style.labelDoB}>Jour</text>
+						<label style={style.labelDoB}>Jour</label>
 						<select style={style.dateSelect} value={newMemberDay} onChange={(e: any) => setNewMemberDay(e.target.value)}>
 							{dayArray.map((opt) => (
 							<option key={opt} value={opt}>
@@ -190,7 +190,7 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 					</div>
 					</div>
 					<div style={style.containerMonth}>
-						<text style={style.labelDoB}>Mois</text>
+						<label style={style.labelDoB}>Mois</label>
 						<select style={style.dateSelect} value={newMemberMonth} onChange={(e: any) => setNewMemberMonth(e.target.value)}>
 							{monthArray.map((opt) => (
 							<option key={opt} value={opt}>
@@ -210,7 +210,7 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 						</div>
 					</div>
 					<div style={style.containerYear}>
-						<text style={style.labelDoB}>Année</text>
+						<label style={style.labelDoB}>Année</label>
 						<select style={style.dateSelect} value={newMemberYear} onChange={(e: any) => setNewMemberYear(e.target.value)}>
 							{yearArray.map((opt) => (
 							<option key={opt} value={opt}>

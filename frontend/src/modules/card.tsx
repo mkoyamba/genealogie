@@ -6,7 +6,7 @@ type CardProps = UserDataBasic & {
 };
 
 function Card ({ cardWidth, cardHeight, ...user }: CardProps ) {
-	return (  
+	return (
 	<div style={{...style.container, ...{width: cardWidth, height: cardHeight}}}>
 		<h1>{user.surname} {user.name}</h1>
 	</div>
@@ -15,7 +15,7 @@ function Card ({ cardWidth, cardHeight, ...user }: CardProps ) {
 
 const style = {
 	container: {
-		backgroundColor: "pink",
+		backgroundColor: "#f58d64",
 		borderRadius: "20px",
 		margin: "1vh",
 		padding: "5vh"
