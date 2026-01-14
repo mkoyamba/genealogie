@@ -30,7 +30,7 @@ export type UnionNode = {
 export type MediaInfos = {
 	id: number,
 	name: string,
-	url: String,
+	url: string,
 	extension: String,
 	type: "audio" | "video" | "picture" | "text",
 	membersId: number[]

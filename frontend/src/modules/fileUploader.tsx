@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 function FileUploader() {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const uploadFile = async (file: File) => {
-		
+
 		const S3_BUCKET = "koyamba-family-tree-files";
 		const REGION = "eu-west-3";
 

@@ -7,12 +7,10 @@ import Header from "../modules/header";
 import Footer from "../modules/footer";
 import { MediaInfos, UserDataBasic } from "../Types";
 import { useLocation } from "react-router-dom";
-import IconMemberMedia from "../modules/iconeMemberMedia";
 import PopUpIconMemberMedia from "../modules/components/popUpIconMemberMedia";
 import './Media.css'
-import React from "react";
 import FileUploader from "../modules/fileUploader";
-
+import VideoPlayer from "../modules/videoPlyaer";
 
 function Medias() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
@@ -259,6 +257,7 @@ function Medias() {
 					</div>
 				</div>
 				<FileUploader/>
+				<VideoPlayer url=""/>
 				{popUp && <PopUpIconMemberMedia membersId={activeMedia?.membersId} dictMembers={dictMembers} functionClose={setPopUp}/>}
 				<Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 			</div>}
