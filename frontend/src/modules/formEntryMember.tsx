@@ -101,7 +101,7 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 				parent1: newMemberParent1,
 				parent2: newMemberParent2,
 				couple: newMemberCouple.filter((id) => id !== -1),
-				prime: newMemberParent1 === -1 && newMemberParent2 === -1 && newMemberCouple.filter((id) => id !== -1)[0] ? true : false
+				prime: newMemberParent1 === -1 && newMemberParent2 === -1 && !newMemberCouple.filter((id) => id !== -1)[0] ? true : false
 			}
 
 			console.log(memberToSave)

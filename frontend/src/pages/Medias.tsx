@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import ButtonHomepage from "../modules/buttonHomepage";
 import { checkPassword } from "../modules/utils/checkPassword";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NoPage from "./Error404";
 import Header from "../modules/header";
 import Footer from "../modules/footer";
@@ -10,6 +10,8 @@ import { useLocation } from "react-router-dom";
 import IconMemberMedia from "../modules/iconeMemberMedia";
 import PopUpIconMemberMedia from "../modules/components/popUpIconMemberMedia";
 import './Media.css'
+import React from "react";
+import FileUploader from "../modules/fileUploader";
 
 
 function Medias() {
@@ -28,6 +30,83 @@ function Medias() {
 	const [dataMedias, setDataMedias] = useState<MediaInfos[]>([])
 	const testMedia : MediaInfos[] = [//TODO
 	{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
+		id: 0,
+		name: 'photo',
+		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
+		extension: ".jpg",
+		type: "picture",
+		membersId: [1,2]
+	},{
 		id: 0,
 		name: 'photo',
 		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
@@ -104,8 +183,8 @@ function Medias() {
 			setDataMedias(dataMediasTemp)
 		}
 
-		//getDataMedias() //TODO
-		setDataMedias(testMedia) //TODO
+		getDataMedias() //TODO
+		//setDataMedias(testMedia) //TODO
 	}, [password])
 
 	return (
@@ -179,6 +258,7 @@ function Medias() {
 						</div>
 					</div>
 				</div>
+				<FileUploader/>
 				{popUp && <PopUpIconMemberMedia membersId={activeMedia?.membersId} dictMembers={dictMembers} functionClose={setPopUp}/>}
 				<Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 			</div>}
@@ -189,10 +269,13 @@ function Medias() {
 
 const style = {
 	background: {
-		"width": "100vw",
-		"height": "100vh",
-		"backgroundColor": "pink",
+		width: "100vw",
+		height: "100vh",
+		backgroundColor: "pink",
 		overflow: 'hidden',
+		display: 'flex',
+		flexDirection: 'column' as const,
+		alignItems: 'center'
 	},
 	mediaContainer: {
 		display: "flex",
@@ -209,7 +292,7 @@ const style = {
 	},
 	listContainers: {
 		width: '100%',
-		height: '70vh',
+		height: '80vh',
 		display: "flex",
 		justifyContent: 'center',
 	},
@@ -239,19 +322,23 @@ const style = {
 	},
 	videoListContainer: {
 		width: '25%',
-		height: '100%'
+		height: '80%'
 	},
 	audioListContainer: {
 		width: '25%',
-		height: '100%'
+		height: '80%'
 	},
 	pictureListContainer: {
 		width: '25%',
-		height: '100%'
+		height: '80%'
 	},
 	textListContainer: {
 		width: '25%',
-		height: '100%'
+		height: '80%'
+	},
+	buttonAddMedia: {
+		width: '10vw',
+		height: '4vh'
 	}
 }
 

@@ -8,7 +8,7 @@ import Livre from "./pages/Livre";
 import Medias from "./pages/Medias";
 import Recommandations from "./pages/Recommandations";
 
-const apiURL = "https://ja2jzzdvd5.execute-api.eu-west-3.amazonaws.com/dev/"
+const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
 
 function App() {
   return (
