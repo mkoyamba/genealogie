@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import {
   ReactInfiniteCanvas,
   ReactInfiniteCanvasHandle,
@@ -12,10 +12,12 @@ import { UserDataBasic } from "../Types";
 import "./canva.css";
 
 type CanvaProps = {
-  dataBasicMembers: UserDataBasic[];
+  dataBasicMembers: UserDataBasic[],
+  functionClose: Dispatch<SetStateAction<boolean>>
+  memberSelect: Dispatch<SetStateAction<number>>
 };
 
-function Canva({ dataBasicMembers }: CanvaProps) {
+function Canva({ dataBasicMembers, functionClose, memberSelect }: CanvaProps) {
   const canvasRef = useRef<ReactInfiniteCanvasHandle | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,7 +91,7 @@ function Canva({ dataBasicMembers }: CanvaProps) {
           },
         ]}
       >
-        <Workflow dataBasicMembers={dataBasicMembers} />
+        <Workflow dataBasicMembers={dataBasicMembers} functionClose={functionClose} memberSelect={memberSelect}/>
       </ReactInfiniteCanvas>
     </div>
   );

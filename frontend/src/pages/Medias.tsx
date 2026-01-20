@@ -10,7 +10,7 @@ import { useLocation } from "react-router-dom";
 import PopUpIconMemberMedia from "../modules/components/popUpIconMemberMedia";
 import './Media.css'
 import FileUploader from "../modules/fileUploader";
-import VideoPlayer from "../modules/videoPlyaer";
+import VideoPlayer from "../modules/videoPlayer";
 
 function Medias() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
@@ -257,7 +257,7 @@ function Medias() {
 					</div>
 				</div>
 				<FileUploader/>
-				<VideoPlayer url=""/>
+				{false && <VideoPlayer url=""/>}
 				{popUp && <PopUpIconMemberMedia membersId={activeMedia?.membersId} dictMembers={dictMembers} functionClose={setPopUp}/>}
 				<Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 			</div>}

@@ -3,7 +3,7 @@ import UnionBranch from "../../unionBranche";
 import { buildUnionTree } from "../../utils/buildTree";
 import './index.css'
 
-export const Workflow = ({ dataBasicMembers }: WorkflowProps) => {
+export const Workflow = ({ dataBasicMembers, functionClose, memberSelect }: WorkflowProps) => {
   const roots = buildUnionTree(dataBasicMembers);
   const cardWidth = "12vw";
   const cardHeight = "35vh";
@@ -19,6 +19,8 @@ export const Workflow = ({ dataBasicMembers }: WorkflowProps) => {
 					node={root}
 					cardWidth={cardWidth}
 					cardHeight={cardHeight}
+					functionClose={functionClose}
+					memberSelect={memberSelect}
 				/>
 				</div>
 			))}

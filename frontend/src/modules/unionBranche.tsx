@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } from "react";
 import Card from "./card";
 import { UnionNode } from "../Types";
 
@@ -10,6 +10,8 @@ type Props = {
   cardHeight: string;
   siblingUnionCount?: number;
   registerTopAnchorRef?: (el: HTMLDivElement | null) => void;
+  functionClose: Dispatch<SetStateAction<boolean>>
+  memberSelect: Dispatch<SetStateAction<number>>
 };
 
 type Pt = { x: number; y: number };
@@ -21,6 +23,8 @@ export default function UnionBranch({
   cardHeight,
   siblingUnionCount,
   registerTopAnchorRef,
+  functionClose,
+  memberSelect
 }: Props) {
   const isCouple = node.partners.length === 2;
   const branchRef = useRef<HTMLDivElement | null>(null);
@@ -223,14 +227,14 @@ export default function UnionBranch({
       <div style={style.content}>
         <div ref={partnersRowRef} style={style.partnersRow}>
           <div ref={leftCardWrapRef} style={style.cardWrap}>
-            <Card {...node.partners[0]} cardWidth={cardWidth} cardHeight={cardHeight} />
+            <Card {...node.partners[0]} cardWidth={cardWidth} cardHeight={cardHeight} functionClose={functionClose} memberSelect={memberSelect} />
           </div>
 
           {isCouple && (
             <>
               <div ref={coupleLinkRef} style={style.coupleLink} />
               <div ref={rightCardWrapRef} style={style.cardWrap}>
-                <Card {...node.partners[1]} cardWidth={cardWidth} cardHeight={cardHeight} />
+                <Card {...node.partners[1]} cardWidth={cardWidth} cardHeight={cardHeight} functionClose={functionClose} memberSelect={memberSelect} />
               </div>
             </>
           )}
@@ -246,6 +250,8 @@ export default function UnionBranch({
                 cardHeight={cardHeight}
                 registerTopAnchorRef={setChildTopRef(child.key)}
                 siblingUnionCount={node.children.length}
+                functionClose={functionClose}
+                memberSelect={memberSelect}
               />
             ))}
           </div>

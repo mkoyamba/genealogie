@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type UserDataBasic = {
 	id: number,
 	surname: string,
@@ -12,6 +14,8 @@ export type UserDataBasic = {
 
 export type WorkflowProps = {
 	dataBasicMembers: UserDataBasic[];
+	functionClose: Dispatch<SetStateAction<boolean>>
+	memberSelect: Dispatch<SetStateAction<number>>
 };
 
 export type MemberChildsTemplate = {

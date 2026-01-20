@@ -7,11 +7,14 @@ import FormEntryMember from "../modules/formEntryMember";
 import { useSearchParams } from "react-router-dom";
 import { checkPassword } from "../modules/utils/checkPassword";
 import NoPage from "./Error404";
+import PopUpCardMember from "../modules/components/popUpCardMember";
 
 function Homepage() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
 
 	const [searchParams] = useSearchParams();
+	const [memberSelect, setMemberSelect] = useState<number>(-1)
+	const [popUp, setPopUp] = useState<boolean>(false)
 
 	const password = searchParams.get("id")
 	const [check,setCheck] = useState<Boolean>(false)
@@ -78,9 +81,10 @@ function Homepage() {
 					<div style={style.formAddContainer}>
 						<FormEntryMember dataBasicMembers={dataBasicMembers}/>
 					</div>
-					<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers}/></div>
+					<div style={style.canva}><Canva dataBasicMembers={dataBasicMembers} functionClose={setPopUp} memberSelect={setMemberSelect}/></div>
 				</div>
 				<div style={style.footer}><Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/></div>
+				{popUp && <PopUpCardMember dictMembers={dictMembers} memberId={memberSelect} functionClose={setPopUp}/>}
 			</div>}
 			{!check && <NoPage/>}
 		</div>

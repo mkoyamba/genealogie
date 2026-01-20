@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } from "react";
 import { MemberChildsTemplate } from "../Types";
 import Card from "./card";
 
@@ -7,12 +7,14 @@ type TreeBranchProps = {
   cardWidth: string;
   cardHeight: string;
   registerNodeRef?: (el: HTMLDivElement | null) => void;
+  functionClose: Dispatch<SetStateAction<boolean>>
+  memberSelect: Dispatch<SetStateAction<number>>
 };
 
 type Pt = { x: number; y: number };
 type Seg = { a: Pt; b: Pt };
 
-export default function TreeBranch({ node, cardWidth, cardHeight, registerNodeRef }: TreeBranchProps) {
+export default function TreeBranch({ node, cardWidth, cardHeight, registerNodeRef, functionClose, memberSelect }: TreeBranchProps) {
   const branchRef = useRef<HTMLDivElement | null>(null);
   const myCardRef = useRef<HTMLDivElement | null>(null);
   const [svgSize, setSvgSize] = useState({ w: 0, h: 0 });
@@ -147,7 +149,7 @@ export default function TreeBranch({ node, cardWidth, cardHeight, registerNodeRe
 		)}
 
       <div ref={myCardRef} style={style.node}>
-        <Card {...node.data} cardWidth={cardWidth} cardHeight={cardHeight} />
+        <Card {...node.data} cardWidth={cardWidth} cardHeight={cardHeight} functionClose={functionClose} memberSelect={memberSelect}/>
       </div>
 
       {node.children.length > 0 && (
@@ -159,6 +161,8 @@ export default function TreeBranch({ node, cardWidth, cardHeight, registerNodeRe
               cardWidth={cardWidth}
               cardHeight={cardHeight}
               registerNodeRef={setChildCardRef(child.id)}
+              functionClose={functionClose}
+              memberSelect={memberSelect}
             />
           ))}
         </div>
