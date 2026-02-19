@@ -9,8 +9,8 @@ function FileUploader() {
 		const REGION = "eu-west-3";
 
 		AWS.config.update({
-			accessKeyId: "", //TODO
-			secretAccessKey: "", //TODO
+			accessKeyId: process.env.REACT_APP_AWS_KEY_ID, //TODO
+			secretAccessKey: process.env.REACT_APP_AWS_KEY_SECRET, //TODO
 		});
 		const s3 = new AWS.S3({
 			params: { Bucket: S3_BUCKET },

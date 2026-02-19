@@ -11,6 +11,11 @@ import PopUpIconMemberMedia from "../modules/components/popUpIconMemberMedia";
 import './Media.css'
 import FileUploader from "../modules/fileUploader";
 import VideoPlayer from "../modules/videoPlayer";
+import PictureItem from "../modules/components/pictureItem";
+import VideoItem from "../modules/components/videoItem";
+import PdfItem from "../modules/components/pdfItem";
+import AudioItem from "../modules/components/audioItem";
+import PicturePlayer from "../modules/picturePlayer";
 
 function Medias() {
 	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
@@ -20,6 +25,11 @@ function Medias() {
 	const [check,setCheck] = useState<Boolean>(false)
 	const [activeMedia, setActiveMedia] = useState<MediaInfos | undefined>(undefined)
 	const [popUp, setPopUp] = useState<boolean>(false)
+
+	const [videoPlayerPop, setVideoPlayerPop] = useState<boolean>(false)
+	const [picturePlayerPop, setPicturePlayerPop] = useState<boolean>(false)
+	const [pdfPlayerPop, setPdfPlayerPop] = useState<boolean>(false)
+	const [audioPlayerPop, setAudioPlayerPop] = useState<boolean>(false)
 	
 	const location = useLocation();
 	const dataBasicMembers = location.state.dataBasicMembers
@@ -123,7 +133,7 @@ function Medias() {
 	{
 		id: 2,
 		name: 'oui',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/oui.mp4",
+		url: "https://www.youtube.com/watch?v=3fjvIRyYe08",
 		extension: ".mp4",
 		type: "video",
 		membersId: [0]
@@ -196,14 +206,13 @@ function Medias() {
 						<div style={style.mediaContainerList}>
 							{dataMedias.filter((media) => media.type === "video")
 							.map((media) => (
-								<div style={style.mediaContainer}>
-									<label style={style.labelMedia}>{media.name}</label>
-									<button className="buttonExpand" style={style.buttonExpand} onClick={() => {
-											setActiveMedia(media)
-											setPopUp(true)
-									}}>plus...
-									</button>
-								</div>
+								<VideoItem
+									media={media}
+									dictMembers={dictMembers}
+									functionUserList={setPopUp}
+									functionMediaSet={setActiveMedia}
+									functionMediaPlay={setVideoPlayerPop}
+								/>
 							))}
 						</div>
 					</div>
@@ -212,14 +221,13 @@ function Medias() {
 						<div style={style.mediaContainerList}>
 							{dataMedias.filter((media) => media.type === "audio")
 							.map((media) => (
-								<div style={style.mediaContainer}>
-									<label style={style.labelMedia}>{media.name}</label>
-									<button className="buttonExpand" style={style.buttonExpand} onClick={() => {
-											setActiveMedia(media)
-											setPopUp(true)
-									}}>plus...
-									</button>
-								</div>
+								<AudioItem
+									media={media}
+									dictMembers={dictMembers}
+									functionUserList={setPopUp}
+									functionMediaSet={setActiveMedia}
+									functionMediaPlay={setAudioPlayerPop}
+								/>
 							))}
 						</div>
 					</div>
@@ -228,14 +236,13 @@ function Medias() {
 						<div style={style.mediaContainerList}>
 							{dataMedias.filter((media) => media.type === "picture")
 							.map((media) => (
-								<div style={style.mediaContainer}>
-									<label style={style.labelMedia}>{media.name}</label>
-									<button className="buttonExpand" style={style.buttonExpand} onClick={() => {
-											setActiveMedia(media)
-											setPopUp(true)
-									}}>plus...
-									</button>
-								</div>
+								<PictureItem 
+									media={media}
+									dictMembers={dictMembers}
+									functionUserList={setPopUp}
+									functionMediaSet={setActiveMedia}
+									functionMediaPlay={setPicturePlayerPop}
+								/>
 							))}
 						</div>
 					</div>
@@ -244,20 +251,20 @@ function Medias() {
 						<div style={style.mediaContainerList}>
 							{dataMedias.filter((media) => media.type === "text")
 							.map((media) => (
-								<div style={style.mediaContainer}>
-									<label style={style.labelMedia}>{media.name}</label>
-									<button className="buttonExpand" style={style.buttonExpand} onClick={() => {
-											setActiveMedia(media)
-											setPopUp(true)
-									}}>plus...
-									</button>
-								</div>
+								<PdfItem 
+									media={media}
+									dictMembers={dictMembers}
+									functionUserList={setPopUp}
+									functionMediaSet={setActiveMedia}
+									functionMediaPlay={setPdfPlayerPop}
+								/>
 							))}
 						</div>
 					</div>
 				</div>
 				<FileUploader/>
-				{false && <VideoPlayer url=""/>}
+				{videoPlayerPop && <VideoPlayer url={activeMedia?.url} functionClose={setVideoPlayerPop}/>}
+				{picturePlayerPop && <PicturePlayer url={activeMedia?.url} functionClose={setPicturePlayerPop}/>}
 				{popUp && <PopUpIconMemberMedia membersId={activeMedia?.membersId} dictMembers={dictMembers} functionClose={setPopUp}/>}
 				<Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 			</div>}
