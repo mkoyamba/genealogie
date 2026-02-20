@@ -8,7 +8,7 @@ import Livre from "./pages/Livre";
 import Medias from "./pages/Medias";
 import Recommandations from "./pages/Recommandations";
 
-const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
+const apiURL = process.env.REACT_APP_AWS_API_URL
 
 function App() {
   return (

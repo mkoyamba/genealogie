@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import ButtonHomepage from "../modules/buttonHomepage";
 import { checkPassword } from "../modules/utils/checkPassword";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import NoPage from "./Error404";
 import Header from "../modules/header";
 import Footer from "../modules/footer";
@@ -18,7 +18,7 @@ import AudioItem from "../modules/components/audioItem";
 import PicturePlayer from "../modules/picturePlayer";
 
 function Medias() {
-	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
+	const apiURL = process.env.REACT_APP_AWS_API_URL
 
 	const [searchParams] = useSearchParams();
 	const password = searchParams.get("id")
@@ -34,127 +34,9 @@ function Medias() {
 	const location = useLocation();
 	const dataBasicMembers = location.state.dataBasicMembers
 	const dictMembers : Map<number, UserDataBasic> = location.state.dictMembers
+	const [search, setSearch] = useState<string>("");
 
 	const [dataMedias, setDataMedias] = useState<MediaInfos[]>([])
-	const testMedia : MediaInfos[] = [//TODO
-	{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},{
-		id: 0,
-		name: 'photo',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/photo.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1,2]
-	},
-	{
-		id: 1,
-		name: 'test',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/test.jpg",
-		extension: ".jpg",
-		type: "picture",
-		membersId: [1]
-	},
-	{
-		id: 2,
-		name: 'oui',
-		url: "https://www.youtube.com/watch?v=3fjvIRyYe08",
-		extension: ".mp4",
-		type: "video",
-		membersId: [0]
-	},
-	{
-		id: 3,
-		name: 'non',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/non.txt",
-		extension: ".txt",
-		type: "text",
-		membersId: [6]
-	},
-	{
-		id: 4,
-		name: 'audio',
-		url: "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/S3fdsf/test.jpg",
-		extension: ".jpg",
-		type: "audio",
-		membersId: [0,1,2]
-	}
-]
 
 	useEffect(() => {
 		async function checker() {
@@ -191,20 +73,61 @@ function Medias() {
 			setDataMedias(dataMediasTemp)
 		}
 
-		getDataMedias() //TODO
-		//setDataMedias(testMedia) //TODO
+		getDataMedias()
 	}, [password])
+
+	const onMembersAddedToActiveMedia = (newMemberIds: number[]) => {
+		if (!activeMedia) return;
+
+		setDataMedias((prev) =>
+			prev.map((m) => {
+			if (m.id !== activeMedia.id) return m;
+
+			const merged = Array.from(new Set([...(m.membersId ?? []), ...newMemberIds]));
+			return { ...m, membersId: merged };
+			})
+		);
+
+		setActiveMedia((prev) => {
+			if (!prev) return prev;
+			const merged = Array.from(new Set([...(prev.membersId ?? []), ...newMemberIds]));
+			return { ...prev, membersId: merged };
+		});
+	}
+
+	const filteredMedias = useMemo(() => {
+		const q = search.trim().toLowerCase();
+		if (!q) return dataMedias;
+
+		return dataMedias.filter((m) => {
+			const hay = `${m.name} ${m.extension} ${m.type}`.toLowerCase();
+			return hay.includes(q);
+		});
+	}, [dataMedias, search]);
 
 	return (
 		<div style={style.background}>
 			{check && <div style={style.background}>
 				<Header password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 				<ButtonHomepage/>
+				<div style={style.searchBar}>
+					<input
+						style={style.searchInput}
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						placeholder="Rechercher un média..."
+					/>
+					{search && (
+						<button style={style.searchClear} onClick={() => setSearch("")}>
+						✕
+						</button>
+					)}
+				</div>
 				<div style={style.listContainers}>
 					<div style={style.videoListContainer}>
 						<div style={style.titleContainer}><label style={style.title}>VIDEOS</label></div>
 						<div style={style.mediaContainerList}>
-							{dataMedias.filter((media) => media.type === "video")
+							{filteredMedias.filter((media) => media.type === "video")
 							.map((media) => (
 								<VideoItem
 									media={media}
@@ -219,7 +142,7 @@ function Medias() {
 					<div style={style.audioListContainer}>
 						<div style={style.titleContainer}><label style={style.title}>AUDIOS</label></div>
 						<div style={style.mediaContainerList}>
-							{dataMedias.filter((media) => media.type === "audio")
+							{filteredMedias.filter((media) => media.type === "audio")
 							.map((media) => (
 								<AudioItem
 									media={media}
@@ -234,7 +157,7 @@ function Medias() {
 					<div style={style.pictureListContainer}>
 						<div style={style.titleContainer}><label style={style.title}>PHOTOS</label></div>
 						<div style={style.mediaContainerList}>
-							{dataMedias.filter((media) => media.type === "picture")
+							{filteredMedias.filter((media) => media.type === "picture")
 							.map((media) => (
 								<PictureItem 
 									media={media}
@@ -249,7 +172,7 @@ function Medias() {
 					<div style={style.textListContainer}>
 						<div style={style.titleContainer}><label style={style.title}>ARTICLES</label></div>
 						<div style={style.mediaContainerList}>
-							{dataMedias.filter((media) => media.type === "text")
+							{filteredMedias.filter((media) => media.type === "text")
 							.map((media) => (
 								<PdfItem 
 									media={media}
@@ -264,8 +187,16 @@ function Medias() {
 				</div>
 				<FileUploader/>
 				{videoPlayerPop && <VideoPlayer url={activeMedia?.url} functionClose={setVideoPlayerPop}/>}
-				{picturePlayerPop && <PicturePlayer url={activeMedia?.url} functionClose={setPicturePlayerPop}/>}
-				{popUp && <PopUpIconMemberMedia membersId={activeMedia?.membersId} dictMembers={dictMembers} functionClose={setPopUp}/>}
+				{picturePlayerPop && <PicturePlayer mediaList={dataMedias.filter((media) => media.type === "picture")} media={activeMedia} url={activeMedia?.url} functionClose={setPicturePlayerPop}/>}
+				{popUp && (
+					<PopUpIconMemberMedia
+						mediaId={activeMedia?.id}
+						membersId={activeMedia?.membersId}
+						dictMembers={dictMembers}
+						functionClose={setPopUp}
+						onMembersAdded={onMembersAddedToActiveMedia}
+					/>
+				)}
 				<Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 			</div>}
 			{!check && <NoPage/>}
@@ -345,6 +276,27 @@ const style = {
 	buttonAddMedia: {
 		width: '10vw',
 		height: '4vh'
+	},
+	searchBar: {
+		width: "90%",
+		display: "flex",
+		alignItems: "center",
+		gap: "0.5rem",
+		marginTop: "1rem",
+		marginBottom: "0.5rem",
+	},
+	searchInput: {
+		flex: 1,
+		padding: "0.6rem 0.9rem",
+		borderRadius: "999px",
+		border: "1px solid rgba(0,0,0,0.2)",
+		outline: "none",
+	},
+	searchClear: {
+		border: "none",
+		cursor: "pointer",
+		borderRadius: "999px",
+		padding: "0.6rem 0.9rem",
 	}
 }
 

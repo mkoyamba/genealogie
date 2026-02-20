@@ -10,7 +10,7 @@ import NoPage from "./Error404";
 import PopUpCardMember from "../modules/components/popUpCardMember";
 
 function Homepage() {
-	const apiURL = "https://054nhdh1yj.execute-api.eu-west-3.amazonaws.com/dev"
+	const apiURL = process.env.REACT_APP_AWS_API_URL
 
 	const [searchParams] = useSearchParams();
 	const [memberSelect, setMemberSelect] = useState<number>(-1)
