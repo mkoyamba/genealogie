@@ -98,61 +98,60 @@ function PopUpIconMemberMedia( props : Props ) {
 			</div>
 			{popUpAdd && (
 			<div style={style.popUpAddContainer}>
-			<div style={style.popUpAddCard}>
-				<button style={style.buttonCloseAdd} onClick={() => setPopUpAdd(false)}>
-				X
-				</button>
+				<div style={style.popUpAddCard}>
+					<button style={style.buttonCloseAdd} onClick={() => setPopUpAdd(false)}>
+					X
+					</button>
 
-				<h2 style={style.popUpAddTitle}>Ajouter des membres</h2>
+					<h2 style={style.popUpAddTitle}>Ajouter des membres</h2>
 
-				<div style={style.chips}>
-				{selectedUsers.length === 0 ? (
-					<div style={style.chipsEmpty}>Aucun membre sélectionné.</div>
-				) : (
-					selectedUsers.map(({ id, user }) => (
-					<div key={id} style={style.chip}>
-						<span style={style.chipText}>
-						{`${(user as any).surname} ${(user as any).name}`}
-						</span>
-						<button style={style.chipRemove} onClick={() => removeFromToAdd(id)}>
-						×
+					<div style={style.chips}>
+					{selectedUsers.length === 0 ? (
+						<div style={style.chipsEmpty}>Aucun membre sélectionné.</div>
+					) : (
+						selectedUsers.map(({ id, user }) => (
+						<div key={id} style={style.chip}>
+							<span style={style.chipText}>
+							{`${(user as any).surname} ${(user as any).name}`}
+							</span>
+							<button style={style.chipRemove} onClick={() => removeFromToAdd(id)}>
+							×
+							</button>
+						</div>
+						))
+					)}
+					</div>
+
+					<div style={style.selectRow}>
+						<select
+							style={style.select}
+							value={selectedId}
+							onChange={(e) => setSelectedId(e.target.value === "" ? "" : Number(e.target.value))}
+						>
+							<option value="">— Choisir un membre —</option>
+							{selectableMembers.map(({ id, user }) => (
+							<option key={id} value={id}>
+								{`${(user as any).surname} ${(user as any).name}`}
+							</option>
+							))}
+						</select>
+
+						<button style={style.addOneBtn} onClick={addSelected} disabled={selectedId === ""}>
+							Ajouter
 						</button>
 					</div>
-					))
-				)}
+					<button
+						style={style.submitBtn}
+						onClick={submitToAdd}
+						disabled={toAdd.length === 0 || isSubmitting}
+					>
+						{isSubmitting ? "Envoi..." : `Valider (${toAdd.length})`}
+					</button>
 				</div>
-
-				<div style={style.selectRow}>
-				<select
-					style={style.select}
-					value={selectedId}
-					onChange={(e) => setSelectedId(e.target.value === "" ? "" : Number(e.target.value))}
-				>
-					<option value="">— Choisir un membre —</option>
-					{selectableMembers.map(({ id, user }) => (
-					<option key={id} value={id}>
-						{`${(user as any).surname} ${(user as any).name}`}
-					</option>
-					))}
-				</select>
-
-				<button style={style.addOneBtn} onClick={addSelected} disabled={selectedId === ""}>
-					Ajouter
-				</button>
-				</div>
-
-				<button
-				style={style.submitBtn}
-				onClick={submitToAdd}
-				disabled={toAdd.length === 0 || isSubmitting}
-				>
-				{isSubmitting ? "Envoi..." : `Valider (${toAdd.length})`}
-				</button>
 			</div>
-			</div>
-		)}
+			)}
 		</div>
-  );
+	);
 }
 
 const style = {

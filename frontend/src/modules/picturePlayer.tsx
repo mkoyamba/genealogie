@@ -11,7 +11,6 @@ type Props = {
 	const PicturePlayer = (props: Props) => {
 	const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(-1);
 
-	// Index initial basé sur le media reçu
 	const initialIndex = useMemo(() => {
 		if (!props.media) return -1;
 		return props.mediaList.findIndex((m) => m.id === props.media!.id);
@@ -43,27 +42,31 @@ type Props = {
 	if (!hasMedia) return null;
 
 	const currentMedia = props.mediaList[currentMediaIndex];
+	const imageUrl = `${process.env.REACT_APP_AWS_S3_URL}${currentMedia.url}`;
 
 	return (
 		<div style={style.videoPlayer}>
-		<label style={style.picName}>{currentMedia.name}</label>
-
-		<button style={style.buttonPrev} onClick={goPrev} aria-label="Précédent">
-			←
-		</button>
-
-		<img
-			src={`${process.env.REACT_APP_AWS_S3_URL}${currentMedia.url}`}
-			style={style.image}
-		/>
-
-		<button style={style.buttonNext} onClick={goNext} aria-label="Suivant">
-			→
-		</button>
-
-		<button style={style.buttonClose} onClick={() => props.functionClose(false)}>
-			X
-		</button>
+			<label style={style.picName}>{currentMedia.name}</label>
+			<button style={style.buttonPrev} onClick={goPrev} aria-label="Précédent">
+				←
+			</button>
+			<img
+				src={imageUrl}
+				style={style.image}
+			/>
+			<button style={style.buttonNext} onClick={goNext} aria-label="Suivant">
+				→
+			</button>
+			<button style={style.buttonClose} onClick={() => props.functionClose(false)}>
+				X
+			</button>
+			<a
+				href={imageUrl}
+				download
+				style={style.buttonDownload}
+			>
+				Download
+			</a>
 		</div>
 	);
 };
@@ -132,6 +135,19 @@ const style = {
 		maxWidth: "90vw",
 		opacity: "1",
 	},
+	buttonDownload: {
+		position: "absolute" as const,
+		top: 0,
+		right: 0,
+		marginTop: "1%",
+		marginRight: "1%",
+		padding: "8px 14px",
+		background: "#000",
+		color: "white",
+		borderRadius: "6px",
+		textDecoration: "none",
+		cursor: "pointer",
+	}
 };
 
 export default PicturePlayer;

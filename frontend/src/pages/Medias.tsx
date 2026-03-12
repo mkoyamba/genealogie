@@ -229,7 +229,7 @@ const style = {
 	},
 	listContainers: {
 		width: '100%',
-		height: '80vh',
+		height: '70vh',
 		display: "flex",
 		justifyContent: 'center',
 	},

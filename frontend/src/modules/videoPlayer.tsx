@@ -6,16 +6,35 @@ type Props = {
 	functionClose: Dispatch<SetStateAction<boolean>>
 }
 
-const VideoPlayer = ( props : Props ) => {
+const VideoPlayer = (props: Props) => {
+
+	const videoUrl = `${process.env.REACT_APP_AWS_S3_URL}${props.url}`;
+
 	return (
 		<div style={style.videoPlayer} className="video-player">
+
 			<ReactPlayer
-				src={`${process.env.REACT_APP_AWS_S3_URL}${props.url}`}
+				src={videoUrl}
 				controls
 				width="94%"
 				height="94%"
 			/>
-			<button style={style.buttonClose} onClick={() => props.functionClose(false)}>X</button>
+
+			<button
+				style={style.buttonClose}
+				onClick={() => props.functionClose(false)}
+			>
+				X
+			</button>
+
+			<a
+				href={videoUrl}
+				download
+				style={style.buttonDownload}
+			>
+				Télécharger
+			</a>
+
 		</div>
 	);
 };
@@ -46,6 +65,18 @@ const style = {
 		borderRadius: '100%',
 		marginTop: '1%',
 		marginLeft: '1%'
+	},
+	buttonDownload: {
+		position: 'absolute' as const,
+		top: 0,
+		right: 0,
+		marginTop: '1%',
+		marginRight: '1%',
+		padding: '8px 14px',
+		background: '#000',
+		color: 'white',
+		borderRadius: '6px',
+		textDecoration: 'none'
 	}
 }
 
