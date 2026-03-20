@@ -1,13 +1,12 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: transparent;
 }
 
 #stage {
   position: fixed;
   inset: 0;
-  background: #fafafa;
+  background: #F7EDED;
   background: transparent;
 }
 

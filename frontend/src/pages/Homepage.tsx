@@ -95,7 +95,7 @@ const style = {
 	background: {
 		width: "100vw",
 		height: "100vh",
-		backgroundColor: '#f2ccc9'
+		backgroundColor: "rgb(247, 237, 237)"
 	},
 	footer: {
 		width: "100vw",

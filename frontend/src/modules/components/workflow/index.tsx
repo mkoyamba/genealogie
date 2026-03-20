@@ -39,7 +39,7 @@ const styles = {
 		justifyContent: "center",
 		alignItems: "center",
 		overflowY: "hidden",
-    	overflowX: "hidden",
+		overflowX: "hidden",
 	},
 	tree: {
 		display: "flex",

@@ -2,7 +2,8 @@ import { UserDataBasic } from "../../Types";
 import IconMemberMedia from "../iconeMemberMedia";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import "./popUpIconMemberMedia.css";
-import logo_plus from '../../assets/logo_plus.svg'
+import logo_plus from '../../assets/logo_plus.png'
+import logo_exit from '../../assets/logo_exit.png'
 
 type Props = {
 	mediaId: number | undefined,
@@ -85,7 +86,9 @@ function PopUpIconMemberMedia( props : Props ) {
 	return (
 		<div className="popupOverlay" style={style.background}>
 			<div className="popupCard" style={style.container}>
-				<button style={style.buttonClose} onClick={() => props.functionClose(false)}>X</button>
+				<button style={style.buttonClose} onClick={() => props.functionClose(false)}>
+					<img style={{width:'100%', height:'100%'}} src={logo_exit}/>
+				</button>
 				<button style={style.buttonAdd} onClick={() => setPopUpAdd(true)}>
 					<img style={{width:'100%', height:'100%'}} src={logo_plus}/>
 				</button>
@@ -204,6 +207,9 @@ const style = {
 		borderRadius: "100%",
 		marginTop: "4%",
 		marginLeft: "4%",
+		border: 'none',
+		background: 'transparent',
+		cursor: 'pointer'
 	},
 	buttonAdd: {
 		background: "transparent",

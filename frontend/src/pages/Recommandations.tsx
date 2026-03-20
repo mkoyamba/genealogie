@@ -41,7 +41,7 @@ const style = {
 	background: {
 		"width": "100vw",
 		"height": "100vh",
-		"backgroundColor": "pink"
+		"backgroundColor": "rgb(247, 237, 237)"
 	}
 }
 

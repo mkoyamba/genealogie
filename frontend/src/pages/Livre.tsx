@@ -25,12 +25,18 @@ function Livre() {
 		checker()
 	})
 
+	const bookUrl = process.env.REACT_APP_BOOK_URL
+
 	return (
 		<div style={style.background}>
 			{check && <div style={style.background}>
 				<Header password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 				<ButtonHomepage/>
-				<h1>Livre</h1>
+				<iframe
+					src={bookUrl}
+					style={style.book}
+					title={"Livre des Koyamba"}
+				/>
 				<Footer password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 			</div>}
 			{!check && <NoPage/>}
@@ -42,7 +48,11 @@ const style = {
 	background: {
 		width: "100vw",
 		minHeight: "100vh",
-		backgroundColor: "pink"
+		backgroundColor: "rgb(247, 237, 237)"
+	},
+	book: {
+		width: '100vw',
+		height: '86vh'
 	}
 }
 

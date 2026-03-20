@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { MediaInfos } from "../Types";
+import { MediaInfos } from "../../Types";
 
 type Props = {
 		url: string | undefined;
@@ -8,7 +8,7 @@ type Props = {
 		functionClose: Dispatch<SetStateAction<boolean>>;
 	};
 
-	const PicturePlayer = (props: Props) => {
+	const PdfPlayer = (props: Props) => {
 	const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(-1);
 
 	const initialIndex = useMemo(() => {
@@ -42,7 +42,7 @@ type Props = {
 	if (!hasMedia) return null;
 
 	const currentMedia = props.mediaList[currentMediaIndex];
-	const imageUrl = `${process.env.REACT_APP_AWS_S3_URL}${currentMedia.url}`;
+	const pdfUrl = `${process.env.REACT_APP_AWS_S3_URL}${currentMedia.url}`;
 
 	return (
 		<div style={style.videoPlayer}>
@@ -50,9 +50,10 @@ type Props = {
 			<button style={style.buttonPrev} onClick={goPrev} aria-label="Précédent">
 				←
 			</button>
-			<img
-				src={imageUrl}
-				style={style.image}
+			<iframe
+				src={pdfUrl}
+				style={style.pdf}
+				title={currentMedia.name}
 			/>
 			<button style={style.buttonNext} onClick={goNext} aria-label="Suivant">
 				→
@@ -60,13 +61,6 @@ type Props = {
 			<button style={style.buttonClose} onClick={() => props.functionClose(false)}>
 				X
 			</button>
-			<a
-				href={imageUrl}
-				download
-				style={style.buttonDownload}
-			>
-				Download
-			</a>
 		</div>
 	);
 };
@@ -130,24 +124,11 @@ const style = {
 		cursor: "pointer",
 		fontSize: "24px",
 	},
-	image: {
-		maxHeight: "80vh",
-		maxWidth: "90vw",
+	pdf: {
+		height: "80vh",
+		width: "80vw",
 		opacity: "1",
-	},
-	buttonDownload: {
-		position: "absolute" as const,
-		top: 0,
-		right: 0,
-		marginTop: "1%",
-		marginRight: "1%",
-		padding: "8px 14px",
-		background: "#000",
-		color: "white",
-		borderRadius: "6px",
-		textDecoration: "none",
-		cursor: "pointer",
 	}
 };
 
-export default PicturePlayer;
+export default PdfPlayer;

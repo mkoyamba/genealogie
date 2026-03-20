@@ -11,7 +11,11 @@ type UploadItem = {
 	status: UploadStatus;
 };
 
-function FileUploader() {
+type Props = {
+	text: string | undefined;
+};
+
+function FileUploader(props: Props) {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const [files, setFiles] = useState<UploadItem[]>([]);
@@ -133,7 +137,7 @@ function FileUploader() {
 
 		const params: AWS.S3.PutObjectRequest = {
 			Bucket: S3_BUCKET,
-			Key: `active/${finalName}`,
+			Key: `${props.text ? "recipes/" : "active/"}${finalName}`,
 			Body: item.file,
 			ContentType: item.file.type || "application/octet-stream",
 		};
@@ -141,9 +145,17 @@ function FileUploader() {
 		try {
 			await s3.upload(params).promise();
 
-			setFiles((prev) =>
-				prev.map((f) => (f.id === item.id ? { ...f, status: "done" } : f))
-			);
+			setFiles((prev) => {
+				const updated = prev.filter((f) => f.id !== item.id);
+
+				if (updated.length === 0) {
+					setTimeout(() => {
+						window.location.reload();
+					}, 2000);
+				}
+
+				return updated;
+			});
 		} catch (error) {
 			console.error("Erreur upload :", finalName, error);
 
@@ -162,9 +174,9 @@ function FileUploader() {
 
 		try {
 			await Promise.all(validFiles.map(uploadSingleFile));
-
-			window.location.reload();
+			
 		} finally {
+			
 			setIsUploading(false);
 		}
 	};
@@ -182,7 +194,7 @@ function FileUploader() {
 			/>
 
 			<button style={styles.buttonOpen} onClick={handleOpenModal}>
-				Upload
+				{props.text ? props.text : 'Charger des fichiers'}
 			</button>
 
 			{isModalOpen && (
@@ -201,7 +213,7 @@ function FileUploader() {
 							onClick={handleButtonChooseFiles}
 						>
 							<p style={{ margin: 0, fontWeight: 600 }}>
-								Glissez-déposez vos fichiers ici
+								Glissez-déposez vos fichiers ici {props.text && "(en .pdf)"}
 							</p>
 							<p style={{ margin: "8px 0 0 0" }}>
 								ou cliquez pour en sélectionner plusieurs
@@ -279,17 +291,20 @@ function FileUploader() {
 	);
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
 	buttonOpen: {
 		width: "10vw",
 		height: "4vh",
-		backgroundColor: "rgba(231, 50, 50, 0.5)",
+		backgroundColor: 'rgb(156, 138, 138)',
 		border: "none",
 		borderRadius: "8px",
 		cursor: "pointer",
+		color: 'rgba(255, 255, 255, 0.9)',
+		fontWeight: 500,
+		letterSpacing: "1px"
 	},
 	overlayStyle: {
-		position: "fixed",
+		position: "fixed" as const,
 		top: 0,
 		left: 0,
 		right: 0,
@@ -307,16 +322,17 @@ const styles: Record<string, React.CSSProperties> = {
 		width: "90%",
 		maxWidth: "700px",
 		maxHeight: "85vh",
-		overflowY: "auto",
+		overflowY: "auto"  as const,
 		boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
 	},
 	dropzone: {
 		border: "2px dashed #999",
 		borderRadius: "12px",
 		padding: "28px 20px",
-		textAlign: "center",
+		textAlign: "center" as const,
 		cursor: "pointer",
 		backgroundColor: "#fafafa",
+		marginTop: "20px",
 		marginBottom: "20px",
 	},
 	dropzoneActive: {
@@ -325,7 +341,7 @@ const styles: Record<string, React.CSSProperties> = {
 	},
 	filesContainer: {
 		display: "flex",
-		flexDirection: "column",
+		flexDirection: "column" as const,
 		gap: "12px",
 		marginBottom: "20px",
 	},

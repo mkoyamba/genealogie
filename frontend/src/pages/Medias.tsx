@@ -9,13 +9,14 @@ import { MediaInfos, UserDataBasic } from "../Types";
 import { useLocation } from "react-router-dom";
 import PopUpIconMemberMedia from "../modules/components/popUpIconMemberMedia";
 import './Media.css'
-import FileUploader from "../modules/fileUploader";
-import VideoPlayer from "../modules/videoPlayer";
-import PictureItem from "../modules/components/pictureItem";
-import VideoItem from "../modules/components/videoItem";
-import PdfItem from "../modules/components/pdfItem";
-import AudioItem from "../modules/components/audioItem";
-import PicturePlayer from "../modules/picturePlayer";
+import FileUploader from "../modules/components/fileUploader";
+import VideoPlayer from "../modules/components/videoPlayer";
+import PictureItem from "../modules/pictureItem";
+import VideoItem from "../modules/videoItem";
+import PdfItem from "../modules/pdfItem";
+import AudioItem from "../modules/audioItem";
+import PicturePlayer from "../modules/components/picturePlayer";
+import PdfPlayer from "../modules/components/pdfPlayer";
 
 function Medias() {
 	const apiURL = process.env.REACT_APP_AWS_API_URL
@@ -29,7 +30,6 @@ function Medias() {
 	const [videoPlayerPop, setVideoPlayerPop] = useState<boolean>(false)
 	const [picturePlayerPop, setPicturePlayerPop] = useState<boolean>(false)
 	const [pdfPlayerPop, setPdfPlayerPop] = useState<boolean>(false)
-	const [audioPlayerPop, setAudioPlayerPop] = useState<boolean>(false)
 	
 	const location = useLocation();
 	const dataBasicMembers = location.state.dataBasicMembers
@@ -57,7 +57,7 @@ function Medias() {
 			raw_data.forEach((media: any) => {
 				let dataMedia: MediaInfos = {
 					id: parseInt(media.id["N"]),
-					name: media.name["S"],
+					name: media.name["S"].replaceAll('+', ' '),
 					url: media.url["S"],
 					extension: media.extension["S"],
 					type: media.type["S"],
@@ -75,6 +75,10 @@ function Medias() {
 
 		getDataMedias()
 	}, [password])
+
+	const removeMediaByUrl = (url: string) => {
+		setDataMedias((prev) => prev.filter((media) => media.url !== url));
+	}
 
 	const onMembersAddedToActiveMedia = (newMemberIds: number[]) => {
 		if (!activeMedia) return;
@@ -135,6 +139,7 @@ function Medias() {
 									functionUserList={setPopUp}
 									functionMediaSet={setActiveMedia}
 									functionMediaPlay={setVideoPlayerPop}
+									deleteMediaFunction={removeMediaByUrl}
 								/>
 							))}
 						</div>
@@ -149,7 +154,7 @@ function Medias() {
 									dictMembers={dictMembers}
 									functionUserList={setPopUp}
 									functionMediaSet={setActiveMedia}
-									functionMediaPlay={setAudioPlayerPop}
+									deleteMediaFunction={removeMediaByUrl}
 								/>
 							))}
 						</div>
@@ -165,6 +170,7 @@ function Medias() {
 									functionUserList={setPopUp}
 									functionMediaSet={setActiveMedia}
 									functionMediaPlay={setPicturePlayerPop}
+									deleteMediaFunction={removeMediaByUrl}
 								/>
 							))}
 						</div>
@@ -180,14 +186,16 @@ function Medias() {
 									functionUserList={setPopUp}
 									functionMediaSet={setActiveMedia}
 									functionMediaPlay={setPdfPlayerPop}
+									deleteMediaFunction={removeMediaByUrl}
 								/>
 							))}
 						</div>
 					</div>
 				</div>
-				<FileUploader/>
+				<FileUploader text={undefined}/>
 				{videoPlayerPop && <VideoPlayer url={activeMedia?.url} functionClose={setVideoPlayerPop}/>}
 				{picturePlayerPop && <PicturePlayer mediaList={dataMedias.filter((media) => media.type === "picture")} media={activeMedia} url={activeMedia?.url} functionClose={setPicturePlayerPop}/>}
+				{pdfPlayerPop && <PdfPlayer mediaList={dataMedias.filter((media) => media.type === "text")} media={activeMedia} url={activeMedia?.url} functionClose={setPdfPlayerPop}/>}
 				{popUp && (
 					<PopUpIconMemberMedia
 						mediaId={activeMedia?.id}
@@ -208,7 +216,7 @@ const style = {
 	background: {
 		width: "100vw",
 		height: "100vh",
-		backgroundColor: "pink",
+		backgroundColor: "rgba(247, 237, 237)",
 		overflow: 'hidden',
 		display: 'flex',
 		flexDirection: 'column' as const,
