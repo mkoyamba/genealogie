@@ -9,7 +9,8 @@ export type UserDataBasic = {
 	couple: number[],
 	parent1: number,
 	parent2: number,
-	prime: true | false
+	prime: true | false,
+	picture: string
 }
 
 export type WorkflowProps = {
@@ -29,6 +30,9 @@ export type UnionNode = {
   key: string;
   partners: UserDataBasic[];
   children: UnionNode[];
+  position: 'right' | 'left',
+  duplicatedPartnerId?: number;
+  leftPartners?: UnionNode[];
 };
 
 export type MediaInfos = {

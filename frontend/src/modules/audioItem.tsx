@@ -56,7 +56,7 @@ function AudioItem(props: Props) {
 				}}><img style={{width:'100%', height:'100%'}} src={logo_personne}/>
 			</button>
 
-			<label style={style.labelMedia}>{props.media.name}</label>
+			<span style={style.labelMedia}>{props.media.name}</span>
 
 			<div style={style.progressContainer}>
 				<input

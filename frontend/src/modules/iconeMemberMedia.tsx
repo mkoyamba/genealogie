@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { UserDataBasic } from "../Types";
+import { getUserPicture } from "./card";
 
 type Props = {
 	user: UserDataBasic | undefined
@@ -9,15 +10,17 @@ function IconMemberMedia( props : Props ) {
 
 	const navigate = useNavigate();
 
+	const picture = getUserPicture(props.user)
+
 	return (
 		<div>
 			{props.user && <div style={style.background}>
 				<div style={style.imageContainer}>
-					<div style={style.futurImage}></div>
+					<img style={style.image} src={picture}/>
 				</div>
 				<div style={style.labels}>
-					<label style={style.labelText}>{props.user?.surname}</label>
-					<label style={style.labelText}>{props.user?.name}</label>
+					<span style={style.labelText}>{props.user?.surname}</span>
+					<span style={style.labelText}>{props.user?.name}</span>
 				</div>
 			</div>}
 		</div>
@@ -41,8 +44,7 @@ const style = {
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
-	futurImage: {
-		backgroundColor: "white",
+	image: {
 		height: "100%",
 		aspectRatio: '1/1'
 	},

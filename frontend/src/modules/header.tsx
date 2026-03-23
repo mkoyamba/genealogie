@@ -20,13 +20,13 @@ function Header( props : Props ) {
 		<div style={style.container}>
 			<div style={style.background}>
 				<button style={style.button} onClick={() => navigate(`/livre?id=${props.password}`, {state: dataBasicMembers})}>
-					<label style={style.labels}>Livre</label>
+					<span style={style.labels}>Livre</span>
 				</button>
 				<button style={style.button} onClick={() => navigate(`/medias?id=${props.password}`, {state: dataBasicMembers})}>
-					<label style={style.labels}>Medias</label>
+					<span style={style.labels}>Medias</span>
 				</button>
 				<button style={style.button} onClick={() => navigate(`/recettes?id=${props.password}`, {state: dataBasicMembers})}>
-					<label style={style.labels}>Recettes</label>
+					<span style={style.labels}>Recettes</span>
 				</button>
 			</div>
 		</div>

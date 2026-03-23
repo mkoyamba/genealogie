@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { UserDataBasic } from "../../Types";
-import IconMemberMedia from "../iconeMemberMedia";
 import { Dispatch, SetStateAction } from "react";
+import logo_exit from '../../assets/logo_exit.png'
+import logo_plus from '../../assets/logo_plus.png'
 import "./popUpCardMember.css";
+import { getUserPicture } from "../card";
 
 type Props = {
 	memberId: number,
@@ -16,33 +18,7 @@ function PopUpCardMember( props : Props ) {
 
 	const navigate = useNavigate();
 
-	function genderTrad( gender: string | undefined ) {
-		switch(gender) {
-			case 'male':
-				return 'Homme';
-			case 'female':
-				return 'Femme';
-			case 'other':
-				return 'Autre';
-			default:
-				return 'Inconnu';
-		}
-	}
-
-	let parent1 : UserDataBasic | undefined
-	if (member?.parent1 !== undefined && !Number.isNaN(member?.parent1)) {
-		parent1 = props.dictMembers.get(member?.parent1)
-	}
-	else {
-		parent1 = undefined
-	}
-	let parent2 : UserDataBasic | undefined
-	if (member?.parent2 !== undefined && !Number.isNaN(member?.parent2)) {
-		parent2 = props.dictMembers.get(member?.parent2)
-	}
-	else {
-		parent2 = undefined
-	}
+	const picture = member?.picture ? member.picture : getUserPicture(member)
 
 	return (
 		<div className="popupOverlay" style={style.background}>
@@ -51,13 +27,8 @@ function PopUpCardMember( props : Props ) {
 				<h1 style={style.title}>{`${member?.surname} ${member?.name}`}</h1>
 				<div style={style.infoContainer}>
 					<div style={style.graphicContainer}>
-						<span>Nom : {member?.name}</span>
-						<span>Prenom : {member?.surname}</span>
-						<span>Date de naissance : {member?.dateOfBirth}</span>
-						<span>Genre : {genderTrad(member?.gender)}</span>
-						{(parent1 || parent2) ? <span>Parent :</span> : <span>Parent inconnus</span>}
-						{parent1 && <span>{parent1?.name} {parent1?.surname}</span>}
-						{parent2 && <span>{parent2?.name} {parent2?.surname}</span>}
+						<img style={{width:'100%', aspectRatio: 1}} src={picture}/>
+						<span>Date de naissance : {member?.dateOfBirth}</span>				
 					</div>
 					<div style={style.mediasContainer}>
 
@@ -107,7 +78,8 @@ const style = {
 		width: '40%',
 		height: '100%',
 		display: 'flex',
-		flexDirection: 'column' as const
+		flexDirection: 'column' as const,
+		alignItems: 'center'
 	},
 	mediasContainer: {
 		backgroundColor: 'blue',

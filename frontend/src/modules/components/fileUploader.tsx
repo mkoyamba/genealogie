@@ -230,9 +230,9 @@ function FileUploader(props: Props) {
 											</p>
 
 											<div style={{ marginBottom: "10px" }}>
-												<label style={{ display: "block", marginBottom: "6px" }}>
+												<span style={{ display: "block", marginBottom: "6px" }}>
 													Nouveau nom
-												</label>
+												</span>
 
 												<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
 													<input

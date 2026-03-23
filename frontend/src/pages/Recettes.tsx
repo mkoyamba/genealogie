@@ -107,7 +107,7 @@ function Recettes() {
 			{check && <div style={style.background}>
 				<Header password={password} dataBasicMembers={dataBasicMembers} dictMembers={dictMembers}/>
 				<ButtonHomepage/>
-				<div style={style.titleContainer}><label style={style.title}>RECETTES</label></div>
+				<div style={style.titleContainer}><span style={style.title}>RECETTES</span></div>
 				<div style={style.searchBar}>
 					<input
 						style={style.searchInput}

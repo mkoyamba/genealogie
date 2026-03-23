@@ -31,7 +31,7 @@ function RecipeItem( props : Props ) {
 				</button>
 				<DeleteMedia media={props.media} deleteMediaFunction={props.deleteMediaFunction}/>
 			</div>
-			<div style={style.labelContainer}><label style={style.labelMedia}>{props.media.name}</label></div>
+			<div style={style.labelContainer}><span style={style.labelMedia}>{props.media.name}</span></div>
 		</div>
 	);
 }
@@ -94,7 +94,7 @@ const style = {
 		border: "none",
 		background: "transparent",
 		cursor: "pointer",
-		width: "1.5vw",
+		width: "2vw",
 		borderRadius: "5%",
 		aspectRatio: "1",
 		flexShrink: 0,

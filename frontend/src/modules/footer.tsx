@@ -19,10 +19,10 @@ function Footer( props : Props ) {
 	return (
 	<div style={style.background}>
 		 <button style={style.button} onClick={() => navigate(`/credits?id=${props.password}`, {state: dataBasicMembers})}>
-			<label style={style.labels}>Making-off et crédits</label>
+			<span style={style.labels}>Making-off et crédits</span>
 		</button>
 		<button style={style.button} onClick={() => navigate(`/recommandations?id=${props.password}`, {state: dataBasicMembers})}>
-			<label style={style.labels}>Recommandations</label>
+			<span style={style.labels}>Recommandations</span>
 		</button>
 	</div>
   );

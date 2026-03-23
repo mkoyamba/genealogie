@@ -22,7 +22,7 @@ function PdfItem( props : Props ) {
 					props.functionUserList(true)
 				}}><img style={{width:'100%', height:'100%'}} src={logo_personne}/>
 			</button>
-			<label style={style.labelMedia}>{props.media.name}</label>
+			<span style={style.labelMedia}>{props.media.name}</span>
 			<button style={style.buttonPlay} onClick={() => {
 					props.functionMediaSet(props.media)
 					props.functionMediaPlay(true)

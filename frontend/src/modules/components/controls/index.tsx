@@ -1,7 +1,9 @@
-import "./styles.css";
+import './styles.css'
 
-export const Controls = ({ zoomBy, zoomState }: any) => {
-  const { scale } = zoomState;
+
+export const Controls = ({ zoomBy, getCanvasState }: any) => {
+  const canvasState = getCanvasState?.();
+  const scale = canvasState?.currentPosition?.k ?? 1;
 
   return (
     <div className="control-wrapper">

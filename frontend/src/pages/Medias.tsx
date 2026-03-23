@@ -129,7 +129,7 @@ function Medias() {
 				</div>
 				<div style={style.listContainers}>
 					<div style={style.videoListContainer}>
-						<div style={style.titleContainer}><label style={style.title}>VIDEOS</label></div>
+						<div style={style.titleContainer}><span style={style.title}>VIDEOS</span></div>
 						<div style={style.mediaContainerList}>
 							{filteredMedias.filter((media) => media.type === "video")
 							.map((media) => (
@@ -145,7 +145,7 @@ function Medias() {
 						</div>
 					</div>
 					<div style={style.audioListContainer}>
-						<div style={style.titleContainer}><label style={style.title}>AUDIOS</label></div>
+						<div style={style.titleContainer}><span style={style.title}>AUDIOS</span></div>
 						<div style={style.mediaContainerList}>
 							{filteredMedias.filter((media) => media.type === "audio")
 							.map((media) => (
@@ -160,7 +160,7 @@ function Medias() {
 						</div>
 					</div>
 					<div style={style.pictureListContainer}>
-						<div style={style.titleContainer}><label style={style.title}>PHOTOS</label></div>
+						<div style={style.titleContainer}><span style={style.title}>PHOTOS</span></div>
 						<div style={style.mediaContainerList}>
 							{filteredMedias.filter((media) => media.type === "picture")
 							.map((media) => (
@@ -176,7 +176,7 @@ function Medias() {
 						</div>
 					</div>
 					<div style={style.textListContainer}>
-						<div style={style.titleContainer}><label style={style.title}>ARTICLES</label></div>
+						<div style={style.titleContainer}><span style={style.title}>ARTICLES</span></div>
 						<div style={style.mediaContainerList}>
 							{filteredMedias.filter((media) => media.type === "text")
 							.map((media) => (

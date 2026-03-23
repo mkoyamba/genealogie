@@ -46,7 +46,7 @@ type Props = {
 
 	return (
 		<div style={style.videoPlayer}>
-			<label style={style.picName}>{currentMedia.name}</label>
+			<span style={style.picName}>{currentMedia.name}</span>
 			<button style={style.buttonPrev} onClick={goPrev} aria-label="Précédent">
 				←
 			</button>

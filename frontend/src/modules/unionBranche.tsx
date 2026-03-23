@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } fr
 import Card from "./card";
 import { UnionNode } from "../Types";
 
-const LINE_THICKNESS = 4;
+const LINE_THICKNESS = '4px';
 
 type Props = {
   node: UnionNode;
@@ -10,304 +10,411 @@ type Props = {
   cardHeight: string;
   siblingUnionCount?: number;
   registerTopAnchorRef?: (el: HTMLDivElement | null) => void;
-  functionClose: Dispatch<SetStateAction<boolean>>
-  memberSelect: Dispatch<SetStateAction<number>>
+  functionClose: Dispatch<SetStateAction<boolean>>;
+  memberSelect: Dispatch<SetStateAction<number>>;
 };
 
 type Pt = { x: number; y: number };
-type Seg = { a: Pt; b: Pt };
+type Seg = { a: Pt; b: Pt, type: string };
 
-export default function UnionBranch({
-  node,
-  cardWidth,
-  cardHeight,
-  siblingUnionCount,
-  registerTopAnchorRef,
-  functionClose,
-  memberSelect
-}: Props) {
-  const isCouple = node.partners.length === 2;
-  const branchRef = useRef<HTMLDivElement | null>(null);
+const segs: Seg[] = [];
 
-  // Wraps des cartes partenaires (pour ancrages)
-  const partnersRowRef = useRef<HTMLDivElement | null>(null);
-  const leftCardWrapRef = useRef<HTMLDivElement | null>(null);
-  const rightCardWrapRef = useRef<HTMLDivElement | null>(null);
-  const coupleLinkRef = useRef<HTMLDivElement | null>(null);
-
-  // Pour les enfants: on stocke des refs vers leur "ancre top" (carte du descendant)
-  const childTopRefs = useRef(new Map<string, HTMLDivElement>());
-
-  const [segments, setSegments] = useState<Seg[]>([]);
-  const [svgSize, setSvgSize] = useState({ w: 1, h: 1 });
-
-  const snap = (n: number) => Math.round(n);
-
-  const unionsHere = siblingUnionCount ?? 1;
-
-  // base d'écart entre générations
-  const BASE_GAP_VH = 4;
-
-  // chaque union supplémentaire augmente l’écart
-  const EXTRA_PER_UNION_VH = 1.5;
-
-  const rowGap = `${BASE_GAP_VH + (unionsHere - 1) * EXTRA_PER_UNION_VH}vh`;
-
-  // IMPORTANT: l'ancre que ce composant donne à son parent = la carte du descendant (gauche)
-  useLayoutEffect(() => {
-    registerTopAnchorRef?.(leftCardWrapRef.current);
-    return () => registerTopAnchorRef?.(null);
-  }, [registerTopAnchorRef]);
-
-  const setChildTopRef = (key: string) => (el: HTMLDivElement | null) => {
-    if (!el) childTopRefs.current.delete(key);
-    else childTopRefs.current.set(key, el);
-    requestAnimationFrame(recompute);
+const toLocalPoint = (rect: DOMRect | undefined, containerRect: DOMRect) => {
+  if (!rect)
+    return {
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      centerX: 0,
+      centerY: 0,
+  }
+  return {
+    left: rect.left - containerRect.left,
+    right: rect.right - containerRect.left,
+    top: rect.top - containerRect.top,
+    bottom: rect.bottom - containerRect.top,
+    centerX: rect.left - containerRect.left + rect.width / 2,
+    centerY: rect.top - containerRect.top + rect.height / 2,
   };
+};
 
-  const recompute = () => {
-    const branchEl = branchRef.current;
-    if (!branchEl) return;
-
-    const b = branchEl.getBoundingClientRect();
-    const bw = Math.max(1, snap(b.width));
-    const bh = Math.max(1, snap(b.height));
-    setSvgSize({ w: bw, h: bh });
-
-    if (node.children.length === 0) {
-      setSegments([]);
-      return;
-    }
-
-    const row = partnersRowRef.current?.getBoundingClientRect();
-    const left = leftCardWrapRef.current?.getBoundingClientRect();
-    const right = rightCardWrapRef.current?.getBoundingClientRect();
-    const link = coupleLinkRef.current?.getBoundingClientRect();
-
-    if (!left) {
-      setSegments([]);
-      return;
-    }
-
-    // --- ancre parent (bas de l'union) ---
-    // x: centre du coupleLink si couple, sinon centre de la carte gauche
-    // y: point descendu RESPONSIVE à partir du coupleLink vers le bas de la rangée partenaires
-    let parentBottom: Pt;
-
-    if (isCouple && row && link) {
-      const x = link.left - b.left + link.width / 2;
-
-      const linkBottom = link.bottom - b.top;
-      const rowBottom = row.bottom - b.top;
-
-      // Ratio responsive (0=au trait, 1=au bas de la rangée)
-      // Ajuste si besoin: 0.5 / 0.6 / 0.7
-      const t = 0;
-
-      const y = linkBottom + (rowBottom - linkBottom) * t;
-
-      parentBottom = { x: snap(x), y: snap(y) };
-    } else {
-      // Single (ou fallback): centre bas de la carte gauche
-      parentBottom = {
-        x: snap(left.left - b.left + left.width / 2),
-        y: snap(left.bottom - b.top),
-      };
-    }
-
-    // --- ancres enfants (haut de leur carte descendant) ---
-    const childTops: Pt[] = node.children
-      .map((c) => childTopRefs.current.get(c.key))
-      .filter((el): el is HTMLDivElement => Boolean(el))
-      .map((el) => {
-        const r = el.getBoundingClientRect();
-        return {
-          x: snap(r.left - b.left + r.width / 2),
-          y: snap(r.top - b.top),
-        };
-      });
-
-    if (childTops.length === 0) {
-      setSegments([]);
-      return;
-    }
-
-    // --- Y de séparation (barre horizontale) ---
-    const minChildY = Math.min(...childTops.map((pt) => pt.y));
-    const span = minChildY - parentBottom.y;
-
-    // ratio responsive (0 = pas de descente, 1 = jusqu'aux enfants)
-    const BAR_SHIFT_RATIO = 0.45; // ajuste: 0.15 / 0.2 / 0.25
-
-    let midY = snap(
-      parentBottom.y + span * (0.5 + BAR_SHIFT_RATIO)
-    );
-
-    // Empêcher la barre de passer dans les cartes (responsive) :
-    // au moins sous le bas de la rangée partenaires
-    if (row) {
-      const rowBottom = snap(row.bottom - b.top);
-      midY = snap(Math.max(midY, rowBottom));
-    } else {
-      // fallback si row absent: sous le bas des cartes du couple
-      const bottoms: number[] = [];
-      bottoms.push(left.bottom - b.top);
-      if (right) bottoms.push(right.bottom - b.top);
-      const rowBottomFallback = snap(Math.max(...bottoms));
-      midY = snap(Math.max(midY, rowBottomFallback));
-    }
-
-    const minX = Math.min(...childTops.map((pt) => pt.x));
-    const maxX = Math.max(...childTops.map((pt) => pt.x));
-
-    const newSegs: Seg[] = [];
-    // parent -> mid (vertical)
-    newSegs.push({ a: parentBottom, b: { x: parentBottom.x, y: midY } });
-
-    // barre fratrie (horizontal)
-    newSegs.push({ a: { x: minX, y: midY }, b: { x: maxX, y: midY } });
-
-    // mid -> enfants (vertical)
-    for (const ct of childTops) {
-      newSegs.push({ a: { x: ct.x, y: midY }, b: ct });
-    }
-
-    setSegments(newSegs);
-  };
-
-  useLayoutEffect(() => {
-    recompute();
-
-    const ro = new ResizeObserver(() => recompute());
-    if (branchRef.current) ro.observe(branchRef.current);
-    if (partnersRowRef.current) ro.observe(partnersRowRef.current);
-    if (leftCardWrapRef.current) ro.observe(leftCardWrapRef.current);
-    if (rightCardWrapRef.current) ro.observe(rightCardWrapRef.current);
-    if (coupleLinkRef.current) ro.observe(coupleLinkRef.current);
-    childTopRefs.current.forEach((el) => ro.observe(el));
-
-    const onScroll = () => recompute();
-    window.addEventListener("resize", recompute);
-    window.addEventListener("scroll", onScroll, true);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", recompute);
-      window.removeEventListener("scroll", onScroll, true);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [node.children.length]);
+function renderUnionSvg(segments: Seg[], width: number, height: number) {
+  if (!segments.length) return null;
 
   return (
-    <div ref={branchRef} style={{...style.branch, rowGap }}>
-      {/* SVG toujours présent (évite deadlock) */}
-      <svg
-        viewBox={`0 0 ${svgSize.w} ${svgSize.h}`}
-        preserveAspectRatio="none"
-        style={style.svg}
-      >
-        {/* debug: décommente si besoin */}
-        {/* <rect x="0" y="0" width="100%" height="100%" fill="none" stroke="red" /> */}
-
-        {segments.map((s, i) => (
-          <line
-            key={i}
-            x1={s.a.x}
-            y1={s.a.y}
-            x2={s.b.x}
-            y2={s.b.y}
-            stroke="black"
-            strokeWidth={LINE_THICKNESS/2}
-            strokeLinecap="round"
-          />
-        ))}
-      </svg>
-
-      {/* contenu au-dessus du SVG */}
-      <div style={style.content}>
-        <div ref={partnersRowRef} style={style.partnersRow}>
-          <div ref={leftCardWrapRef} style={style.cardWrap}>
-            <Card {...node.partners[0]} cardWidth={cardWidth} cardHeight={cardHeight} functionClose={functionClose} memberSelect={memberSelect} />
-          </div>
-
-          {isCouple && (
-            <>
-              <div ref={coupleLinkRef} style={style.coupleLink} />
-              <div ref={rightCardWrapRef} style={style.cardWrap}>
-                <Card {...node.partners[1]} cardWidth={cardWidth} cardHeight={cardHeight} functionClose={functionClose} memberSelect={memberSelect} />
-              </div>
-            </>
-          )}
-        </div>
-
-        {node.children.length > 0 && (
-          <div style={style.childrenRow}>
-            {node.children.map((child) => (
-              <UnionBranch
-                key={child.key}
-                node={child}
-                cardWidth={cardWidth}
-                cardHeight={cardHeight}
-                registerTopAnchorRef={setChildTopRef(child.key)}
-                siblingUnionCount={node.children.length}
-                functionClose={functionClose}
-                memberSelect={memberSelect}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    >
+      {segments.map((s, i) => (
+        <line
+          key={i}
+          x1={s.a.x}
+          y1={s.a.y}
+          x2={s.b.x}
+          y2={s.b.y}
+          stroke="black"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeDasharray={s.type === 'line' ? undefined : "6.4"}
+        />
+      ))}
+    </svg>
   );
 }
 
+export default function UnionBranch({
+    node,
+    cardWidth,
+    cardHeight,
+    siblingUnionCount,
+    registerTopAnchorRef,
+    functionClose,
+    memberSelect,
+  }: Props) {
+
+    const refs = useRef<Map<number, HTMLDivElement | null>>(new Map());
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
+    const [segments, setSegments] = useState<Seg[]>([]);
+    const [svgSize, setSvgSize] = useState({ w: 4, h: 4 });
+
+    const setRef = (key: number) => (el: HTMLDivElement | null) => {
+      if (el) {
+        refs.current.set(key, el);
+      } else {
+        refs.current.delete(key);
+      }
+    };
+
+    function getNodeMainPartner(node: UnionNode) {
+      if (!node.partners[1] || !node.leftPartners || !node.leftPartners[0])
+        return node.partners[0]
+      else if (node.partners[0].id === node.leftPartners[0].duplicatedPartnerId)
+        return node.partners[0]
+      else
+        return node.partners[1]
+    }
+
+    function getNodeSecondPartner(node: UnionNode) {
+      if (!node.partners[1])
+        return node.partners[0]
+      else if (node.partners[0].id === getNodeMainPartner(node).id)
+        return node.partners[1]
+      else
+        return node.partners[0]
+    }
+
+    const displayPartnerTree = (node: UnionNode, last: number) => {
+      
+      const visiblePartner = node.partners[0].id === node.duplicatedPartnerId ? node.partners[1] : node.partners[0];
+
+      return (
+        <div style={style.mainUnion}>
+          <div style={{...style.partner, paddingRight: '20vw'}}>
+            <div ref={setRef(visiblePartner.id)} style={style.cardContainer}>
+              <Card
+                {...visiblePartner}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                functionClose={functionClose}
+                memberSelect={memberSelect}
+              />
+            </div>
+          </div>
+          <div style={style.children}>
+                {node.children[0] ? node.children.map((child, index) => recursiveTree(child, index, false)) : null}
+          </div>
+        </div>
+      )
+    }
+
+    const recursiveTree = (node: UnionNode, index : number, prime: boolean) => {
+      const mainPartner = getNodeMainPartner(node)
+      const orderedLeftPartners = [...(node.leftPartners ?? [])].reverse();
+      const secondPartner = node.partners[1] ? node.partners[0].id === mainPartner.id ? node.partners[1] : node.partners[0] : undefined
+
+      return (
+        <div style={{ ...style.container, position: "relative", paddingLeft: index === 0 ? "" : "15vw"}}>
+          {
+            node.leftPartners
+            ? orderedLeftPartners.map((node, index) => (
+                <div style={style.leftPartners}>
+                  {displayPartnerTree(node, index)}
+                </div>
+              ))
+            : null
+          }
+          <div style={style.mainUnion}>
+            <div style={style.couple}>
+              <div style={{...style.partner, paddingRight: secondPartner ? '10vw' : '0vw'}}>
+                    <div ref={setRef(mainPartner.id)} style={style.cardContainer}>
+                      <Card
+                        {...mainPartner}
+                        cardWidth={cardWidth}
+                        cardHeight={cardHeight}
+                        functionClose={functionClose}
+                        memberSelect={memberSelect}
+                      />
+                    </div>
+                </div>
+                {secondPartner && <div style={style.partner}>
+                    <div ref={setRef(secondPartner.id)} style={style.cardContainer}>
+                      <Card
+                        {...secondPartner}
+                        cardWidth={cardWidth}
+                        cardHeight={cardHeight}
+                        functionClose={functionClose}
+                        memberSelect={memberSelect}
+                      />
+                    </div>
+                </div>}
+              </div>
+              <div style={style.children}>
+                {
+                  node.children[0]
+                  ? node.children.map((child, index) => (
+                      <div>
+                        {recursiveTree(child, index, false)}
+                      </div>
+                    ))
+                  : null
+                }
+              </div>
+          </div>
+        </div>
+      )
+    }
+
+    const buildSeg = (node: UnionNode, containerRect: DOMRect) => {
+      const nextSegs: Seg[] = [];
+
+      function getLineTopChildren (currentNode: UnionNode, topLevel: number) {
+        if (!currentNode.children[0])
+          return { a: { x: 0, y: 0,}, b: {x: 0, y: 0},type: "line" }
+        const children = [...(currentNode).children].sort((a, b) => {
+          const mainPartnerARef = refs.current.get(getNodeMainPartner(a).id)
+          const mainPartnerBRef = refs.current.get(getNodeMainPartner(b).id)
+          const mainPartnerARect = mainPartnerARef?.getBoundingClientRect()
+          const mainPartnerBRect = mainPartnerBRef?.getBoundingClientRect()
+          return (mainPartnerARect && mainPartnerBRect ? mainPartnerARect?.left - mainPartnerBRect.left : 0)
+        })
+
+        const leftChildRect = refs.current.get(getNodeMainPartner(children[0]).id)?.getBoundingClientRect()
+        const rightChildRect = refs.current.get(getNodeMainPartner(children[children.length - 1]).id)?.getBoundingClientRect()
+
+        const pointLeft : Pt = {
+          x: toLocalPoint(leftChildRect, containerRect).centerX,
+          y: topLevel
+        }
+
+        const pointRight : Pt = {
+          x: toLocalPoint(rightChildRect, containerRect).centerX,
+          y: topLevel
+        }
+
+        const segmentResult: Seg = {a: pointLeft, b: pointRight, type: 'line'}
+
+        return segmentResult
+      }
+      
+      function recursiveSegment(currentNode: UnionNode, prime: boolean, topLevel: number)  {
+        //segment couple droite
+        const mainPartnerRef = refs.current.get(getNodeMainPartner(currentNode).id)
+        const mainPartnerRect = mainPartnerRef?.getBoundingClientRect()
+        if (currentNode.key.startsWith('U')) {
+          const secondPartnerRef = refs.current.get(getNodeSecondPartner(currentNode).id)
+          const secondPartnerRect = secondPartnerRef?.getBoundingClientRect()
+          const segmentCoupleDroite = {
+            a: {
+              x: toLocalPoint(mainPartnerRect, containerRect)?.right,
+              y: toLocalPoint(mainPartnerRect, containerRect)?.centerY,
+            },
+            b: {
+              x: toLocalPoint(secondPartnerRect, containerRect)?.left,
+              y: toLocalPoint(secondPartnerRect, containerRect)?.centerY
+            },
+            type: "line"
+          }
+          nextSegs.push(segmentCoupleDroite)
+          let segmentEnfantCoupleDroite = { a: { x: 0, y: 0,}, b: {x: 0, y: 0},type: "line" }
+          if (currentNode.children[0]) {
+            segmentEnfantCoupleDroite = {
+              a: {
+                x: ((segmentCoupleDroite.b.x - segmentCoupleDroite.a.x) / 2) + segmentCoupleDroite.a.x,
+                y: segmentCoupleDroite.a.y
+              },
+              b: {
+                x: ((segmentCoupleDroite.b.x - segmentCoupleDroite.a.x) / 2) + segmentCoupleDroite.a.x,
+                y: segmentCoupleDroite.a.y + (mainPartnerRect?.height ? mainPartnerRect.height * 8/10 : 0)
+              },
+              type: 'line'
+            }
+          }
+          if (segmentEnfantCoupleDroite.a.x !== 0)
+            nextSegs.push(segmentEnfantCoupleDroite)
+          //segment couples gauche
+          let beforeLeftPartnerRef = mainPartnerRef
+          let beforeLeftPartnerRect = mainPartnerRect
+          currentNode.leftPartners && currentNode.leftPartners.map((partner, index) => {
+            let currentPartnerRef = refs.current.get(partner.partners[0].id === getNodeMainPartner(partner).id ? partner.partners[1].id : partner.partners[0].id)
+            let currentPartnerRect = currentPartnerRef?.getBoundingClientRect()
+            const segmentCoupleGauche = {
+              a: {
+                x: toLocalPoint(beforeLeftPartnerRect, containerRect)?.left,
+                y: toLocalPoint(beforeLeftPartnerRect, containerRect)?.centerY,
+              },
+              b: {
+                x: toLocalPoint(currentPartnerRect, containerRect)?.right,
+                y: toLocalPoint(currentPartnerRect, containerRect)?.centerY
+              },
+              type: index > 0 ? 'points' : 'line'
+            }
+            nextSegs.push(segmentCoupleGauche)
+
+            let segmentEnfantCoupleGauche = { a: { x: 0, y: 0,}, b: {x: 0, y: 0},type: "line" }
+            let firstChildX = 0
+            if (partner.children.length === 1) {
+              const firstChildRect = refs.current.get(getNodeMainPartner(partner.children[0]).id)?.getBoundingClientRect()
+              firstChildX = toLocalPoint(firstChildRect, containerRect).centerX
+            }
+            if (partner.children[0]) {
+              segmentEnfantCoupleGauche = {
+                a: {
+                  x: firstChildX ? firstChildX : (containerRect.width/50) + segmentCoupleGauche.b.x,
+                  y: segmentCoupleGauche.a.y
+                },
+                b: {
+                  x: firstChildX ? firstChildX : (containerRect.width/50) + segmentCoupleGauche.b.x,
+                  y: segmentCoupleDroite.a.y + (beforeLeftPartnerRect?.height ? beforeLeftPartnerRect.height * 8/10 : 0)
+                },
+                type: 'line'
+              }
+            }
+            if (segmentEnfantCoupleGauche.a.x !== 0)
+              nextSegs.push(segmentEnfantCoupleGauche)
+
+            beforeLeftPartnerRef = currentPartnerRef
+            beforeLeftPartnerRect = currentPartnerRect
+            //segment enfants couple gauche
+            const segEnfantGauche = getLineTopChildren(partner, toLocalPoint(mainPartnerRect, containerRect)?.centerY + (mainPartnerRect?.height ? mainPartnerRect.height * 8/10 : 0))
+            nextSegs.push(segEnfantGauche)
+            partner.children.map((child) => {
+              recursiveSegment(child, false, segEnfantGauche.a.y)
+            })
+          })
+        }
+        //segment enfants
+        const segEnfant = getLineTopChildren(currentNode, toLocalPoint(mainPartnerRect, containerRect)?.centerY + (mainPartnerRect?.height ? mainPartnerRect.height * 8/10 : 0))
+        nextSegs.push(segEnfant)
+        currentNode.children.map((child) => {
+          recursiveSegment(child, false, segEnfant.a.y)
+        })
+        //segment haut
+        if (!prime) {
+          let segmentTete = {
+            a: { 
+              x: toLocalPoint(mainPartnerRect, containerRect).centerX,
+              y: toLocalPoint(mainPartnerRect, containerRect).top,
+            },
+            b: {
+              x: toLocalPoint(mainPartnerRect, containerRect).centerX,
+              y: topLevel,
+            },
+            type: "line"
+          }
+          nextSegs.push(segmentTete)
+        }
+      }
+      recursiveSegment(node, true, 0)
+      setSegments(nextSegs);
+    }
+
+    const recomputeSegments = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const containerRect = container.getBoundingClientRect();
+
+      setSvgSize({
+        w: Math.max(1, Math.round(containerRect.width)),
+        h: Math.max(1, Math.round(containerRect.height)),
+      });
+
+      buildSeg(node, containerRect)
+    }
+
+    useLayoutEffect(() => {
+      recomputeSegments();
+
+      const ro = new ResizeObserver(() => recomputeSegments());
+      if (containerRef.current) ro.observe(containerRef.current);
+
+      refs.current.forEach((el) => {
+        if (el) ro.observe(el);
+      });
+
+      window.addEventListener("resize", recomputeSegments);
+      window.addEventListener("scroll", recomputeSegments, true);
+
+      return () => {
+        ro.disconnect();
+        window.removeEventListener("resize", recomputeSegments);
+        window.removeEventListener("scroll", recomputeSegments, true);
+      };
+    }, [node]
+  );
+
+
+  return (
+    <div ref={containerRef} style={{ position: "relative" }}>
+      {renderUnionSvg(segments, svgSize.w, svgSize.h)}
+      {recursiveTree(node, 0, true)}
+    </div>
+  )
+}
+
 const style: Record<string, React.CSSProperties> = {
-  branch: {
-    position: "relative",
-    display: "inline-flex",
-    flexDirection: "column",
-    alignItems: "center",
-    rowGap: "5vw"
+  container: {
+    display: 'flex',
+    flexDirection: 'row' as const,
+    justifyContent: 'center',
+    position: 'relative' as const,
   },
-  svg: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    width: "100%",
-    height: "100%",
-    pointerEvents: "none",
-    zIndex: 0,
+  mainUnion: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column' as const,
+    rowGap: '10vh',
+    marginTop: '3vw',
   },
-  content: {
-    position: "relative",
-    zIndex: 1,
-    padding: "8px",
-    display: "inline-flex",
-    flexDirection: "column",
-    alignItems: "center",
-    rowGap: "10vh"
+  couple: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'row' as const
   },
-  partnersRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "12px",
-    marginBottom: "18px",
+  partner: {
+
   },
-  cardWrap: {
-    position: "relative",
+  cardContainer: {
   },
-  coupleLink: {
-    display: "block",
-    width: "40px",
-    height: `${LINE_THICKNESS}px`,
-    background: "black",
+  children: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'row' as const,
   },
-  childrenRow: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "24px",
-    alignItems: "flex-start",
-    columnGap: "10vw"
-  },
+  leftPartners: {
+    marginRight: '30vw'
+  }
 };

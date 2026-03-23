@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UserDataBasic } from "../Types";
+import logo_plus from '../assets/logo_plus.png'
 
 type Props = {
   dataBasicMembers: UserDataBasic[];
@@ -101,10 +102,9 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 				parent1: newMemberParent1,
 				parent2: newMemberParent2,
 				couple: newMemberCouple.filter((id) => id !== -1),
-				prime: newMemberParent1 === -1 && newMemberParent2 === -1 && !newMemberCouple.filter((id) => id !== -1)[0] ? true : false
+				prime: newMemberParent1 === -1 && newMemberParent2 === -1 && !newMemberCouple.filter((id) => id !== -1)[0] ? true : false,
+				picture: ""
 			}
-
-			console.log(memberToSave)
 
 			await send(memberToSave)
 			memberToSave.couple.forEach(async( coupleId) => {
@@ -127,9 +127,10 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 			dateOfBirth: { "S" : member.dateOfBirth },
 			gender: { "S" : member.gender },
 			parent1: { "S" : member.parent1 !== -1 ? String(member.parent1) : ""},
-			parent2: { "S" : member.parent1 !== -1 ? String(member.parent2) : ""},
+			parent2: { "S" : member.parent2 !== -1 ? String(member.parent2) : ""},
 			couple: { "NS" : [...member.couple.map(String), "-1"] },
-			prime: { "BOOL" : member.prime }
+			prime: { "BOOL" : member.prime },
+			picture: { "S" : ""}
 		}
 
 		const effectResponse = await fetch(`${apiURL}/members`, {
@@ -147,6 +148,9 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 
 	return (
 		<div style={style.container}>
+			<h2 style={style.title}>
+				Ajouter un membre
+			</h2>
 			<form onSubmit={handleSubmit} style={style.form}>
 				<input
 					style={style.entry}
@@ -168,8 +172,8 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 				
 				<div style={style.dateOfBirth}>
 					<div style={style.containerDay}>
-						<label style={style.labelDoB}>Jour</label>
-						<select style={style.dateSelect} value={newMemberDay} onChange={(e: any) => setNewMemberDay(e.target.value)}>
+						<span style={style.labelDoB}>Jour</span>
+						<select style={style.dateSelect} value={newMemberDay} onChange={(e: any) => setNewMemberDay(Number(e.target.value))}>
 							{dayArray.map((opt) => (
 							<option key={opt} value={opt}>
 								{opt}
@@ -178,20 +182,20 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 						))}
 						</select>
 						<div style={style.containerGender}>
-						<label style={style.labelDoB}>
-							Homme
-							
-						</label>
-						<input
-								type="checkbox"
-								checked={newMemberMale}
-								onChange={(e) => setGender(0)}
-						/>
-					</div>
+							<span style={style.labelDoB}>
+								Homme
+								
+							</span>
+							<input
+									type="checkbox"
+									checked={newMemberMale}
+									onChange={(e) => setGender(0)}
+							/>
+						</div>
 					</div>
 					<div style={style.containerMonth}>
-						<label style={style.labelDoB}>Mois</label>
-						<select style={style.dateSelect} value={newMemberMonth} onChange={(e: any) => setNewMemberMonth(e.target.value)}>
+						<span style={style.labelDoB}>Mois</span>
+						<select style={style.dateSelect} value={newMemberMonth} onChange={(e: any) => setNewMemberMonth(Number(e.target.value))}>
 							{monthArray.map((opt) => (
 							<option key={opt} value={opt}>
 								{opt}
@@ -199,9 +203,9 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 						))}
 						</select>
 						<div style={style.containerGender}>
-							<label style={style.labelDoB}>
+							<span style={style.labelDoB}>
 								Femme
-							</label>
+							</span>
 							<input
 									type="checkbox"
 									checked={newMemberFemale}
@@ -210,8 +214,8 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 						</div>
 					</div>
 					<div style={style.containerYear}>
-						<label style={style.labelDoB}>Année</label>
-						<select style={style.dateSelect} value={newMemberYear} onChange={(e: any) => setNewMemberYear(e.target.value)}>
+						<span style={style.labelDoB}>Année</span>
+						<select style={style.dateSelect} value={newMemberYear} onChange={(e: any) => setNewMemberYear(Number(e.target.value))}>
 							{yearArray.map((opt) => (
 							<option key={opt} value={opt}>
 								{opt}
@@ -219,9 +223,9 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 						))}
 						</select>
 						<div style={style.containerGender}>
-							<label style={style.labelDoB}>
+							<span style={style.labelDoB}>
 								Autre
-							</label>
+							</span>
 							<input
 									type="checkbox"
 									checked={newMemberOther}
@@ -231,40 +235,41 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 					</div>
 				</div>
 				<div style={style.parentContainer}>
-					<label style={style.labelDoB} >Parents</label>
-					<select value={newMemberParent1} onChange={(e: any) => setNewMemberParent1(e.target.value)}>
+					<span style={style.labelDoB} >Parents</span>
+					<select style={style.select} value={newMemberParent1} onChange={(e: any) => setNewMemberParent1(e.target.value)}>
 						<option key={-1} value={-1}>
 								{"Inconnu"}
 						</option>
 						{dataBasicMembers.map((opt) => (
 							<option key={opt.id} value={opt.id}>
-								{newMemberParent1?`${opt.surname} ${opt.name} né le ${opt.dateOfBirth}`:""}
+								{newMemberParent1?`${opt.surname} ${opt.name}`:""}
 							</option>
 						))}
 					</select>
-					<select value={newMemberParent2} onChange={(e: any) => setNewMemberParent2(e.target.value)}>
+					<select style={style.select} value={newMemberParent2} onChange={(e: any) => setNewMemberParent2(e.target.value)}>
 						<option key={-1} value={-1}>
 								{"Inconnu"}
 						</option>
 						{dataBasicMembers.map((opt) => (
 							<option key={opt.id} value={opt.id}>
-								{`${opt.surname} ${opt.name} né le ${opt.dateOfBirth}`}
+								{newMemberParent2?`${opt.surname} ${opt.name}`:""}
 							</option>
 						))}
 					</select>
 				</div>
 				<div style={style.coupleContainer}>
+					<div style={style.coupleHeaderMargin}></div>
 					<div style={style.coupleHeader}>
-						<label style={style.labelDoB}>Couple</label>
-
+						<span style={style.labelCoupleHeader}>Couple</span>
 						<button type="button" onClick={addSpouse} style={style.plusBtn}>
-						+
+							<img style={{width:'100%', height:'100%'}} src={logo_plus}/>
 						</button>
 					</div>
 
 					{newMemberCouple.map((spouseId, index) => (
 					<div key={index} style={style.coupleRow}>
 						<select
+							style={style.select}
 							value={spouseId}
 							onChange={(e: any) => updateSpouse(index, Number(e.target.value))}
 						>
@@ -272,7 +277,7 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 
 							{dataBasicMembers.map((opt) => (
 							<option key={opt.id} value={opt.id}>
-								{`${opt.surname} ${opt.name} né le ${opt.dateOfBirth}`}
+								{`${opt.surname} ${opt.name}`}
 							</option>
 							))}
 						</select>
@@ -288,124 +293,214 @@ function FormEntryMember( {dataBasicMembers} : Props ) {
 					))}
 				</div>
 
-				<button type="submit">Envoyer</button>
+				<button style={style.submitBtn} type="submit">Envoyer</button>
 			</form>
 		</div>
 	);
 }
 
 const style = {
+	allDiv: {
+		display: "flex",
+		flexDirection: 'column' as const,
+		justifyContent: "center",
+		alignItems: "center",
+		height: "100%",
+	},
+	title: {
+		marginBottom: '20px',
+		color: "rgba(58, 47, 47, 1)",
+		fontSize: "22px"
+	},
 	container: {
 		width: "100%",
 		height: "100%",
-		background: "transparent"
+		background: "transparent",
+		display: "flex",
+		flexDirection: 'column' as const,
+		justifyContent: "center",
+		alignItems: 'center'
 	},
+
 	form: {
 		display: "flex",
 		width: "100%",
 		flexDirection: "column" as const,
+		backgroundColor: "rgba(247, 237, 237, 0.95)",
+		border: "1px solid rgba(156, 138, 138, 0.25)",
+		borderRadius: "20px",
+		padding: "24px",
+		boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+		gap: "14px",
+		boxSizing: "border-box" as const
 	},
+
 	entry: {
-		marginTop: "1vh",
-		marginBottom: "1vh",
-		borderRadius: "1vh"
+		width: "100%",
+		padding: "12px 14px",
+		borderRadius: "12px",
+		border: "1px solid rgba(156, 138, 138, 0.35)",
+		backgroundColor: "rgba(255,255,255,0.75)",
+		fontSize: "14px",
+		outline: "none",
+		boxSizing: "border-box" as const,
 	},
+
 	dateOfBirth: {
 		width: "100%",
 		display: "flex",
-		justifyContent: "center",
-		paddingTop: "1vh",
-		paddingBottom: "1vh"
+		justifyContent: "space-between",
+		alignItems: "flex-start",
+		gap: "7%",
+		paddingTop: "4px",
+		paddingBottom: "4px",
 	},
+
 	labelDoB: {
-		justifyContent: "center",
-		paddingTop: "1vh",
-		paddingBottom: "1vh"
+		fontSize: "14px",
+		fontWeight: 600,
+		letterSpacing: "0.3px",
+		color: "rgba(58, 47, 47, 0.95)",
+		marginBottom: "8px",
 	},
+
 	containerDay: {
-		marginLeft: "5%",
-		marginRight: "5%",
-		justifyContent: "center",
-		alignItems: "center",
+		flex: 1,
+		minWidth: "0",
 		display: "flex",
 		flexDirection: "column" as const,
+		alignItems: "center",
 	},
+
 	containerMonth: {
-		marginLeft: "5%",
-		marginRight: "5%",
-		justifyContent: "center",
-		alignItems: "center",
+		flex: 1,
+		minWidth: "0",
 		display: "flex",
-		flexDirection: "column" as const
+		flexDirection: "column" as const,
+		alignItems: "center",
 	},
+
 	containerYear: {
-		marginLeft: "5%",
-		marginRight: "5%",
-		justifyContent: "center",
-		alignItems: "center",
+		flex: 1,
+		minWidth: "0",
 		display: "flex",
-		flexDirection: "column" as const
+		flexDirection: "column" as const,
+		alignItems: "center",
 	},
+
 	containerGender: {
-		marginLeft: "5%",
-		marginRight: "5%",
-		justifyContent: "center",
-		alignItems: "center",
+		marginTop: "10px",
 		display: "flex",
-		flexDirection: "column" as const
+		flexDirection: "column" as const,
+		alignItems: "center",
 	},
+
 	parentContainer: {
-		marginLeft: "5%",
-		marginRight: "5%",
-		justifyContent: "center",
-		alignItems: "center",
 		display: "flex",
 		flexDirection: "column" as const,
-		paddingTop: "1vh",
-		paddingBottom: "1vh"
+		gap: "10px",
+		padding: "16px",
+		borderRadius: "16px",
+		backgroundColor: "rgba(156, 138, 138, 0.10)",
+		border: "1px solid rgba(156, 138, 138, 0.18)",
 	},
+
 	coupleContainer: {
-		marginLeft: "5%",
-		marginRight: "5%",
-		marginTop: 10,
-		justifyContent: "center",
-		alignItems: "center",
 		display: "flex",
+		height: '15vh',
 		flexDirection: "column" as const,
-		gap: 8,
-		paddingTop: "1vh",
-		paddingBottom: "1vh"
+		alignItems: 'flex-start',
+		paddingLeft: "16px",
+		borderRadius: "16px",
+		backgroundColor: "rgba(156, 138, 138, 0.10)",
+		border: "1px solid rgba(156, 138, 138, 0.18)",
+		overflowY: 'auto' as const
 	},
+
 	coupleHeader: {
 		width: "100%",
+		minHeight: '5vh',
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "space-between"
+		justifyContent: "space-between",
+		position: "sticky" as const,
+		top: 0,
+		zIndex: 1,
+		backgroundColor: "rgb(238, 227, 227)"
+	},
+	labelCoupleHeader: {
+		fontSize: "14px",
+		fontWeight: 600,
+		letterSpacing: "0.3px",
+		color: "rgba(58, 47, 47, 0.95)"
 	},
 	coupleRow: {
+		marginTop: '0.7vh',
 		width: "100%",
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "center",
-		gap: 8
+		gap: "10px",
 	},
+
 	plusBtn: {
-		width: "2vw",
-		aspectRatio: "1/1",
-		borderRadius: "100%",
-		border: "1px solid #333",
+		width: "1.5vw",
+		aspectRatio: 1,
+		borderRadius: "999px",
+		border: "none",
+		background: "transparent",
 		cursor: "pointer",
 	},
+
 	removeBtn: {
-		width: "2vw",
-		aspectRatio: "1/1",
-		borderRadius: "100%",
-		border: "1px solid #333",
+		width: "34px",
+		minWidth: "34px",
+		height: "34px",
+		borderRadius: "999px",
+		border: "none",
+		background: "transparent",
+		color: "rgba(120, 70, 70, 0.95)",
+		fontSize: "16px",
+		fontWeight: 700,
 		cursor: "pointer",
+		flexShrink: 0,
 	},
+
 	dateSelect: {
-		marginBottom: "3vh"
+		padding: "10% 12%",
+		borderRadius: "12px",
+		border: "1px solid rgba(156, 138, 138, 0.35)",
+		backgroundColor: "rgba(255,255,255,0.75)",
+		fontSize: "14px",
+		outline: "none",
+		boxSizing: "border-box" as const,
+	},
+
+	select: {
+		width: "100%",
+		padding: "12px 14px",
+		borderRadius: "12px",
+		border: "1px solid rgba(156, 138, 138, 0.35)",
+		backgroundColor: "rgba(255,255,255,0.75)",
+		fontSize: "12px",
+		outline: "none",
+		boxSizing: "border-box" as const,
+	},
+	submitBtn: {
+		marginTop: "8px",
+		padding: "12px 16px",
+		borderRadius: "14px",
+		border: "none",
+		backgroundColor: "rgba(156, 138, 138, 0.9)",
+		color: "rgba(255, 255, 255, 0.75)",
+		fontSize: "15px",
+		fontWeight: 600,
+		letterSpacing: "0.3px",
+		cursor: "pointer",
+		boxShadow: "0 6px 16px rgba(0,0,0,0.12)",
+	},
+	coupleHeaderMargin: {
+		height: '2vh'
 	}
-}
+};
 
 export default FormEntryMember;
