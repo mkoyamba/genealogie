@@ -285,9 +285,25 @@ export default function UnionBranch({
 
             let segmentEnfantCoupleGauche = { a: { x: 0, y: 0,}, b: {x: 0, y: 0},type: "line" }
             let firstChildX = 0
-            if (partner.children.length === 1) {
+            if (partner.children.length === 1 && partner.children[0].key.startsWith('S')) {
               const firstChildRect = refs.current.get(getNodeMainPartner(partner.children[0]).id)?.getBoundingClientRect()
               firstChildX = toLocalPoint(firstChildRect, containerRect).centerX
+            }
+            if (partner.children.length === 1) {
+              const firstChildRect = refs.current.get(getNodeMainPartner(partner.children[0]).id)?.getBoundingClientRect()
+              const firstChildX = toLocalPoint(firstChildRect, containerRect).centerX
+              const segmentEnfantUniqueCoupleGauche = {
+                a: {
+                  x: firstChildX,
+                  y: segmentCoupleDroite.a.y + (beforeLeftPartnerRect?.height ? beforeLeftPartnerRect.height * 8/10 : 0)
+                },
+                b: {
+                  x: (containerRect.width/50) + segmentCoupleGauche.b.x,
+                  y: segmentCoupleDroite.a.y + (beforeLeftPartnerRect?.height ? beforeLeftPartnerRect.height * 8/10 : 0)
+                },
+                type: 'line'
+              }
+              nextSegs.push(segmentEnfantUniqueCoupleGauche)
             }
             if (partner.children[0]) {
               segmentEnfantCoupleGauche = {
