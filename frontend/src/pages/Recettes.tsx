@@ -50,7 +50,7 @@ function Recettes() {
 			raw_data.forEach((media: any) => {
 				let dataMedia: MediaInfos = {
 					id: parseInt(media.id["N"]),
-					name: media.name["S"].replaceAll('+', ' '),
+					name: decodeURIComponent(media.name["S"].replaceAll('+', ' ')),
 					url: media.url["S"],
 					extension: media.extension["S"],
 					type: media.type["S"],

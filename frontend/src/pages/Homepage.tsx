@@ -52,8 +52,8 @@ function Homepage() {
 			raw_data.forEach((member: any) => {
 				let dataMember: UserDataBasic = {
 					id: parseInt(member["id"]["N"]),
-					surname: firstCapsName(member["surname"]["S"]),
-					name: firstCapsName(member["name"]["S"]),
+					surname: decodeURIComponent(firstCapsName(member["surname"]["S"])),
+					name: decodeURIComponent(firstCapsName(member["name"]["S"])),
 					dateOfBirth: member["dateOfBirth"]["S"],
 					gender: member["gender"]["S"],
 					couple: [],
